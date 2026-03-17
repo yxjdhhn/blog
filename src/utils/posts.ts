@@ -31,7 +31,9 @@ export async function getAllCategories(lang: Lang): Promise<Map<string, number>>
   const categories = new Map<string, number>();
   posts.forEach((post) => {
     const cat = post.data.category;
-    categories.set(cat, (categories.get(cat) || 0) + 1);
+    if (cat) {
+      categories.set(cat, (categories.get(cat) || 0) + 1);
+    }
   });
   return new Map([...categories.entries()].sort((a, b) => b[1] - a[1]));
 }

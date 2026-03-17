@@ -2,6 +2,7 @@
 title: 'Building a Personal Blog with Astro'
 description: 'A comprehensive guide on how to build a full-featured personal blog from scratch using the Astro framework.'
 pubDate: 2026-03-16
+heroImage: '/images/snow.jpg'
 tags: ['Astro', 'Frontend', 'Tutorial']
 category: 'Tech'
 ---

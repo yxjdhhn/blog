@@ -2,6 +2,7 @@
 title: '你好，世界！'
 description: '这是我的第一篇博客文章，在这里我将分享我创建这个博客的初衷和未来的计划。'
 pubDate: 2026-03-17
+heroImage: '/images/coffee.jpg'
 tags: ['博客', '随笔']
 category: '随笔'
 ---

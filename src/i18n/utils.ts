@@ -19,14 +19,6 @@ export function switchLang(currentUrl: URL, targetLang: Lang): string {
   return `/${targetLang}/${rest.join('/')}`;
 }
 
-export function formatDate(date: Date, lang: Lang): string {
-  return date.toLocaleDateString(lang === 'zh' ? 'zh-CN' : 'en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
-
 export function estimateReadingTime(content: string): number {
   const wordsPerMinute = 200;
   const charsPerMinute = 500;

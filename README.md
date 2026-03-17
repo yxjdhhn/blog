@@ -1,4 +1,4 @@
-# My Blog
+# 元霄节快乐的博客 | allegria's Blog
 
 基于 [Astro](https://astro.build) 构建的个人博客网站，支持中英双语、深色模式、全文搜索等功能，用于分享知识与观点。
 
@@ -9,7 +9,7 @@
 - **Markdown / MDX** — 使用 Markdown 撰写文章，支持 MDX 扩展语法
 - **代码语法高亮** — 基于 Shiki，支持 `github-light` / `github-dark` 双主题自动切换
 - **全文搜索** — 集成 [Pagefind](https://pagefind.app/)，构建时生成静态索引，零服务端依赖，支持中文分词
-- **标签和分类** — 文章支持多标签和单分类，可按标签/分类浏览
+- **标签和分类** — 文章支持多标签和可选分类，可按标签/分类浏览
 - **文章目录 (TOC)** — 文章详情页侧边固定目录，使用 Intersection Observer 高亮当前章节
 - **评论系统** — 集成 [Giscus](https://giscus.app/)（基于 GitHub Discussions），自动跟随主题和语言
 - **RSS 订阅** — 自动生成 `/rss.xml` 订阅源
@@ -41,9 +41,9 @@ blog/
 ├── tsconfig.json
 ├── vercel.json                   # Vercel 部署配置
 ├── public/
-│   ├── favicon.svg
-│   ├── robots.txt
-│   └── images/                   # 静态图片资源
+│   ├── favicon.svg               # 站点图标
+│   ├── logo.svg                  # 站点 Logo
+│   └── robots.txt                # 搜索引擎爬虫规则
 ├── src/
 │   ├── components/
 │   │   ├── BaseHead.astro        # <head> SEO meta tags, Open Graph
@@ -63,29 +63,29 @@ blog/
 │   │       ├── zh/               # 中文文章 (Markdown)
 │   │       └── en/               # 英文文章 (Markdown)
 │   ├── i18n/
-│   │   ├── translations.ts      # UI 文本翻译 (中/英)
-│   │   └── utils.ts             # i18n 工具函数
+│   │   ├── translations.ts       # UI 文本翻译 (中/英)
+│   │   └── utils.ts              # i18n 工具函数
 │   ├── layouts/
-│   │   ├── BaseLayout.astro     # 基础 HTML 骨架
-│   │   └── PostLayout.astro     # 文章详情页布局 (TOC + 评论)
+│   │   ├── BaseLayout.astro      # 基础 HTML 骨架
+│   │   └── PostLayout.astro      # 文章详情页布局 (TOC + 评论)
 │   ├── pages/
-│   │   ├── index.astro          # 根路径 → 重定向到 /zh/
-│   │   ├── 404.astro            # 404 页面
-│   │   ├── rss.xml.ts           # RSS 订阅源
-│   │   ├── zh/                  # 中文版页面
-│   │   │   ├── index.astro              # 首页
-│   │   │   ├── about.astro              # 关于我
-│   │   │   ├── blog/index.astro         # 文章列表
-│   │   │   ├── blog/[...slug].astro     # 文章详情
-│   │   │   ├── tags/index.astro         # 标签云
-│   │   │   ├── tags/[tag]/index.astro   # 按标签筛选
+│   │   ├── index.astro           # 根路径 → 重定向到 /zh/
+│   │   ├── 404.astro             # 404 页面
+│   │   ├── rss.xml.ts            # RSS 订阅源
+│   │   ├── zh/                   # 中文版页面
+│   │   │   ├── index.astro               # 首页
+│   │   │   ├── about.astro               # 关于我
+│   │   │   ├── blog/index.astro          # 文章列表
+│   │   │   ├── blog/[...slug].astro      # 文章详情
+│   │   │   ├── tags/index.astro          # 标签云
+│   │   │   ├── tags/[tag]/index.astro    # 按标签筛选
 │   │   │   └── categories/[category]/index.astro  # 按分类筛选
-│   │   └── en/                  # 英文版 (与 zh/ 镜像结构)
+│   │   └── en/                   # 英文版 (与 zh/ 镜像结构)
 │   ├── styles/
-│   │   └── global.css           # 全局样式 + Tailwind + 文章排版
+│   │   └── global.css            # 全局样式 + Tailwind + 文章排版
 │   └── utils/
-│       ├── posts.ts             # 文章查询/排序/筛选工具函数
-│       └── date.ts              # 日期格式化工具
+│       ├── posts.ts              # 文章查询/排序/筛选工具函数
+│       └── date.ts               # 日期格式化工具
 ```
 
 ## 快速开始
@@ -98,9 +98,6 @@ blog/
 ### 安装与运行
 
 ```bash
-# 克隆项目
-git clone <your-repo-url> blog
-cd blog
 
 # 安装依赖
 npm install
@@ -130,7 +127,7 @@ npm run dev
 title: '文章标题'
 description: '文章摘要描述'
 pubDate: 2026-03-17
-updatedDate: 2026-03-17    # 可选，更新日期
+updatedDate: 2026-03-17    # 可选
 tags: ['Astro', '前端']
 category: '技术'
 heroImage: '/images/hero.jpg'  # 可选，封面图片
@@ -148,8 +145,8 @@ draft: false                   # 设为 true 则不会发布
 | `description` | string     | 是   | 文章摘要，用于 SEO 和列表展示       |
 | `pubDate`     | date       | 是   | 发布日期                          |
 | `updatedDate` | date       | 否   | 更新日期                          |
-| `tags`        | string[]   | 否   | 标签列表，默认为空                  |
-| `category`    | string     | 否   | 分类名称，默认为「未分类」           |
+| `tags`        | string[]   | 否   | 标签列表，默认为空数组              |
+| `category`    | string     | 否   | 分类名称，未设置时不显示分类        |
 | `heroImage`   | string     | 否   | 封面图片路径 (相对于 public/)       |
 | `draft`       | boolean    | 否   | 草稿模式，`true` 时不会出现在列表中  |
 
@@ -161,22 +158,6 @@ draft: false                   # 设为 true 则不会发布
 - `src/content/blog/en/hello-world.md` → `/en/blog/hello-world`
 
 ## 个性化配置
-
-### 修改站点信息
-
-1. **站点域名** — 编辑 `astro.config.mjs` 中的 `site` 字段
-2. **博客标题和描述** — 编辑 `src/i18n/translations.ts` 中的 `site.title` 和 `site.description`
-3. **关于我** — 编辑 `src/pages/zh/about.astro` 和 `src/pages/en/about.astro`
-4. **社交链接** — 编辑 `src/components/Footer.astro` 中的链接
-
-### 配置 Giscus 评论
-
-1. 前往 [giscus.app](https://giscus.app/) 生成配置
-2. 编辑 `src/components/Comments.astro`，替换以下字段：
-   - `data-repo` → 你的 GitHub 仓库 (如 `username/blog`)
-   - `data-repo-id` → 仓库 ID
-   - `data-category` → Discussion 分类名
-   - `data-category-id` → 分类 ID
 
 ### 配置搜索
 
@@ -199,14 +180,6 @@ draft: false                   # 设为 true 则不会发布
 ```
 
 ## 部署
-
-### Vercel (推荐)
-
-1. 将项目推送到 GitHub
-2. 在 [Vercel](https://vercel.com) 导入该仓库
-3. Vercel 会自动检测 Astro 框架并配置构建命令
-4. 部署完成后，在 Vercel 控制台开启 Analytics 即可启用访问统计
-
 ### 其他平台
 
 修改 `astro.config.mjs` 中的 `adapter` 配置即可适配其他平台。移除 Vercel adapter 后默认为纯静态输出，可以部署到任何静态托管服务 (Netlify, Cloudflare Pages, GitHub Pages 等)。

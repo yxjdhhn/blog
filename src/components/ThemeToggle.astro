@@ -1,0 +1,119 @@
+---
+---
+
+<button
+  id="theme-toggle"
+  type="button"
+  class="p-2 rounded-lg transition-colors hover:bg-bg-subtle"
+  aria-label="Toggle theme"
+>
+  <!-- Sun icon - shown when preference is light -->
+  <svg
+    id="icon-light"
+    class="w-5 h-5 text-amber-500 hidden"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+    />
+  </svg>
+  <!-- Moon icon - shown when preference is dark -->
+  <svg
+    id="icon-dark"
+    class="w-5 h-5 text-indigo-400 hidden"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+    />
+  </svg>
+  <!-- Monitor icon - shown when preference is auto -->
+  <svg
+    id="icon-auto"
+    class="w-5 h-5 text-muted hidden"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+    />
+  </svg>
+</button>
+
+<script>
+  function setupThemeToggle() {
+    const toggle = document.getElementById('theme-toggle');
+    const iconLight = document.getElementById('icon-light');
+    const iconDark = document.getElementById('icon-dark');
+    const iconAuto = document.getElementById('icon-auto');
+    if (!toggle || !iconLight || !iconDark || !iconAuto) return;
+
+    function getPreference(): 'light' | 'dark' | 'auto' {
+      const stored = localStorage.getItem('theme');
+      if (stored === 'light' || stored === 'dark') return stored;
+      return 'auto';
+    }
+
+    function applyTheme(preference: 'light' | 'dark' | 'auto') {
+      const isDark = preference === 'dark' ||
+        (preference === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+      document.documentElement.classList.toggle('dark', isDark);
+      document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+
+      iconLight!.classList.toggle('hidden', preference !== 'light');
+      iconDark!.classList.toggle('hidden', preference !== 'dark');
+      iconAuto!.classList.toggle('hidden', preference !== 'auto');
+
+      syncGiscus(isDark);
+    }
+
+    function syncGiscus(isDark: boolean) {
+      const frame = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+      if (frame?.contentWindow) {
+        frame.contentWindow.postMessage(
+          { giscus: { setConfig: { theme: isDark ? 'dark' : 'light' } } },
+          'https://giscus.app'
+        );
+      }
+    }
+
+    applyTheme(getPreference());
+
+    toggle.addEventListener('click', () => {
+      const current = getPreference();
+      const next = current === 'light' ? 'dark' : current === 'dark' ? 'auto' : 'light';
+
+      document.documentElement.classList.add('switching-theme');
+      localStorage.setItem('theme', next);
+      applyTheme(next);
+
+      setTimeout(() => {
+        document.documentElement.classList.remove('switching-theme');
+      }, 350);
+    });
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (getPreference() === 'auto') {
+        applyTheme('auto');
+      }
+    });
+  }
+
+  setupThemeToggle();
+  document.addEventListener('astro:after-swap', setupThemeToggle);
+</script>

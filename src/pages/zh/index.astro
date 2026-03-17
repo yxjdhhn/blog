@@ -1,0 +1,66 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import { getPostsByLang, getAllTags } from '@/utils/posts';
+import { t, getLocalizedUrl } from '@/i18n/utils';
+import type { Lang } from '@/i18n/translations';
+
+const lang: Lang = 'zh';
+const posts = await getPostsByLang(lang);
+const latestPosts = posts.slice(0, 6);
+const tags = await getAllTags(lang);
+---
+
+<BaseLayout title={t(lang, 'site.title')} description={t(lang, 'site.description')}>
+  <!-- Hero Section -->
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 pt-16 pb-12">
+    <div class="text-center">
+      <h1 class="text-4xl sm:text-5xl font-bold text-heading mb-4 leading-tight">
+        {t(lang, 'home.greeting')}
+      </h1>
+      <p class="text-lg text-secondary max-w-2xl mx-auto">
+        {t(lang, 'home.subtitle')}
+      </p>
+    </div>
+  </section>
+
+  <!-- Latest Posts -->
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 pb-16">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-bold text-heading">
+        {t(lang, 'home.latestPosts')}
+      </h2>
+      <a
+        href={getLocalizedUrl(lang, '/blog/')}
+        class="text-sm font-medium text-primary hover:text-primary-hover transition-colors"
+      >
+        {t(lang, 'home.viewAll')} &rarr;
+      </a>
+    </div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {latestPosts.map((post) => (
+        <PostCard post={post} />
+      ))}
+    </div>
+  </section>
+
+  <!-- Tags Section -->
+  {tags.size > 0 && (
+    <section class="max-w-5xl mx-auto px-4 sm:px-6 pb-16">
+      <h2 class="text-2xl font-bold text-heading mb-6">
+        {t(lang, 'tag.allTags')}
+      </h2>
+      <div class="flex flex-wrap gap-2">
+        {[...tags.entries()].map(([tag, count]) => (
+          <a
+            href={getLocalizedUrl(lang, `/tags/${tag}/`)}
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-bg-subtle text-body hover:bg-primary-bg-hover hover:text-primary-hover transition-colors"
+          >
+            #{tag}
+            <span class="text-xs text-muted">({count})</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+</BaseLayout>

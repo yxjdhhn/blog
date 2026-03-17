@@ -1,0 +1,40 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import { getAllTags, getPostsByTag } from '@/utils/posts';
+import { t } from '@/i18n/utils';
+import type { Lang } from '@/i18n/translations';
+
+const lang: Lang = 'zh';
+
+export async function getStaticPaths() {
+  const tags = await getAllTags('zh');
+  return [...tags.keys()].map((tag) => ({
+    params: { tag },
+  }));
+}
+
+const { tag } = Astro.params;
+const posts = await getPostsByTag(lang, tag!);
+---
+
+<BaseLayout title={`${t(lang, 'tag.postsTagged')} "${tag}" | ${t(lang, 'site.title')}`} description={`${t(lang, 'tag.postsTagged')} ${tag}`}>
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+    <div class="mb-8">
+      <a href={`/${lang}/tags/`} class="text-sm text-primary hover:underline">
+        &larr; {t(lang, 'tag.allTags')}
+      </a>
+      <h1 class="text-3xl font-bold text-heading mt-2">
+        #{tag}
+      </h1>
+      <p class="text-muted mt-1">
+        {posts.length} {t(lang, 'tag.postsTagged')}
+      </p>
+    </div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post) => (
+        <PostCard post={post} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

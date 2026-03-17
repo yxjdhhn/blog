@@ -1,0 +1,98 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TableOfContents from '@/components/TableOfContents.astro';
+import Comments from '@/components/Comments.astro';
+import { formatDate } from '@/utils/date';
+import { getLangFromUrl, t, getLocalizedUrl } from '@/i18n/utils';
+import { estimateReadingTime } from '@/i18n/utils';
+import type { BlogPost } from '@/utils/posts';
+
+interface Props {
+  post: BlogPost;
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { post, headings } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const readingTime = estimateReadingTime(post.body || '');
+---
+
+<BaseLayout title={`${post.data.title} | ${t(lang, 'site.title')}`} description={post.data.description} image={post.data.heroImage}>
+  <article class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <!-- Article header -->
+    <header class="max-w-3xl mx-auto mb-8">
+      {post.data.heroImage && (
+        <img
+          src={post.data.heroImage}
+          alt={post.data.title}
+          class="w-full rounded-xl mb-8 shadow-lg"
+        />
+      )}
+
+      <div class="flex items-center gap-2 text-sm text-muted mb-4">
+        <time datetime={post.data.pubDate.toISOString()}>
+          {t(lang, 'post.published')} {formatDate(post.data.pubDate, lang)}
+        </time>
+        {post.data.updatedDate && (
+          <>
+            <span>&middot;</span>
+            <time datetime={post.data.updatedDate.toISOString()}>
+              {t(lang, 'post.updated')} {formatDate(post.data.updatedDate, lang)}
+            </time>
+          </>
+        )}
+        <span>&middot;</span>
+        <span>{readingTime} {t(lang, 'post.minRead')}</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-bold text-heading mb-4 leading-tight">
+        {post.data.title}
+      </h1>
+
+      <p class="text-lg text-secondary mb-4">
+        {post.data.description}
+      </p>
+
+      <div class="flex flex-wrap items-center gap-2">
+        {post.data.category && (
+          <a
+            href={getLocalizedUrl(lang, `/categories/${post.data.category}/`)}
+            class="text-xs px-3 py-1 rounded-full bg-primary-bg-hover text-primary-hover font-medium hover:bg-primary-bg-strong transition-colors"
+          >
+            {post.data.category}
+          </a>
+        )}
+        {post.data.tags.map((tag) => (
+          <a
+            href={getLocalizedUrl(lang, `/tags/${tag}/`)}
+            class="text-xs px-2.5 py-0.5 rounded-full bg-bg-subtle text-secondary hover:bg-primary-bg-hover hover:text-primary-hover transition-colors"
+          >
+            #{tag}
+          </a>
+        ))}
+      </div>
+    </header>
+
+    <!-- Content + TOC layout -->
+    <div class="flex gap-10 justify-center">
+      <!-- Article content -->
+      <div class="prose max-w-3xl flex-1 min-w-0" data-pagefind-body>
+        <slot />
+      </div>
+
+      <!-- Sidebar TOC (desktop only) -->
+      {headings.length > 0 && (
+        <aside class="hidden xl:block w-56 shrink-0">
+          <div class="sticky top-24">
+            <TableOfContents headings={headings} />
+          </div>
+        </aside>
+      )}
+    </div>
+
+    <!-- Comments -->
+    <div class="max-w-3xl mx-auto mt-16">
+      <Comments />
+    </div>
+  </article>
+</BaseLayout>

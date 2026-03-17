@@ -1,0 +1,71 @@
+---
+import { formatDate } from '@/utils/date';
+import { getLangFromUrl, t, getLocalizedUrl } from '@/i18n/utils';
+import { estimateReadingTime } from '@/i18n/utils';
+import type { BlogPost } from '@/utils/posts';
+import { getSlug } from '@/utils/posts';
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const slug = getSlug(post);
+const readingTime = estimateReadingTime(post.body || '');
+---
+
+<article class="group rounded-xl border border-border bg-bg-card p-5 transition-all hover:shadow-lg hover:border-primary-border hover:-translate-y-0.5">
+  {post.data.heroImage && (
+    <a href={getLocalizedUrl(lang, `/blog/${slug}`)}>
+      <img
+        src={post.data.heroImage}
+        alt={post.data.title}
+        class="w-full h-48 object-cover rounded-lg mb-4"
+        loading="lazy"
+      />
+    </a>
+  )}
+
+  <div class="flex items-center gap-2 text-xs text-muted mb-3">
+    <time datetime={post.data.pubDate.toISOString()}>
+      {formatDate(post.data.pubDate, lang)}
+    </time>
+    <span>&middot;</span>
+    <span>{readingTime} {t(lang, 'post.minRead')}</span>
+    {post.data.category && (
+      <>
+        <span>&middot;</span>
+        <a
+          href={getLocalizedUrl(lang, `/categories/${post.data.category}/`)}
+          class="text-primary hover:underline"
+        >
+          {post.data.category}
+        </a>
+      </>
+    )}
+  </div>
+
+  <h2 class="text-lg font-semibold mb-2 text-heading group-hover:text-primary transition-colors">
+    <a href={getLocalizedUrl(lang, `/blog/${slug}`)}>
+      {post.data.title}
+    </a>
+  </h2>
+
+  <p class="text-sm text-secondary mb-4 line-clamp-2">
+    {post.data.description}
+  </p>
+
+  {post.data.tags.length > 0 && (
+    <div class="flex flex-wrap gap-1.5">
+      {post.data.tags.map((tag) => (
+        <a
+          href={getLocalizedUrl(lang, `/tags/${tag}/`)}
+          class="text-xs px-2.5 py-0.5 rounded-full bg-bg-subtle text-secondary hover:bg-primary-bg-hover hover:text-primary-hover transition-colors"
+        >
+          #{tag}
+        </a>
+      ))}
+    </div>
+  )}
+</article>

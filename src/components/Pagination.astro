@@ -1,0 +1,62 @@
+---
+import { getLangFromUrl, t } from '@/i18n/utils';
+
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  baseUrl: string;
+}
+
+const { currentPage, totalPages, baseUrl } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+
+function getPageUrl(page: number): string {
+  if (page === 1) return baseUrl;
+  return `${baseUrl}${page}/`;
+}
+---
+
+{totalPages > 1 && (
+  <nav class="flex items-center justify-center gap-2 mt-10" aria-label="Pagination">
+    {currentPage > 1 ? (
+      <a
+        href={getPageUrl(currentPage - 1)}
+        class="px-4 py-2 rounded-lg text-sm font-medium border border-border-strong text-body hover:bg-bg-subtle transition-colors"
+      >
+        &larr; {t(lang, 'pagination.prev')}
+      </a>
+    ) : (
+      <span class="px-4 py-2 rounded-lg text-sm font-medium border border-border text-muted cursor-not-allowed">
+        &larr; {t(lang, 'pagination.prev')}
+      </span>
+    )}
+
+    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+      <a
+        href={getPageUrl(page)}
+        class:list={[
+          'w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-colors',
+          page === currentPage
+            ? 'bg-indigo-600 text-white'
+            : 'border border-border-strong text-body hover:bg-bg-subtle',
+        ]}
+        aria-current={page === currentPage ? 'page' : undefined}
+      >
+        {page}
+      </a>
+    ))}
+
+    {currentPage < totalPages ? (
+      <a
+        href={getPageUrl(currentPage + 1)}
+        class="px-4 py-2 rounded-lg text-sm font-medium border border-border-strong text-body hover:bg-bg-subtle transition-colors"
+      >
+        {t(lang, 'pagination.next')} &rarr;
+      </a>
+    ) : (
+      <span class="px-4 py-2 rounded-lg text-sm font-medium border border-border text-muted cursor-not-allowed">
+        {t(lang, 'pagination.next')} &rarr;
+      </span>
+    )}
+  </nav>
+)}

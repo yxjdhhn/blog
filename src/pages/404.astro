@@ -1,0 +1,26 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404 - Page Not Found" description="The page you're looking for doesn't exist.">
+  <section class="max-w-3xl mx-auto px-4 sm:px-6 py-24 text-center">
+    <h1 class="text-8xl font-bold text-faint mb-4">404</h1>
+    <p class="text-xl text-secondary mb-8">
+      页面未找到 / Page Not Found
+    </p>
+    <div class="flex items-center justify-center gap-4">
+      <a
+        href="/zh/"
+        class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors"
+      >
+        返回首页
+      </a>
+      <a
+        href="/en/"
+        class="px-6 py-2.5 border border-border-strong text-body rounded-lg font-medium hover:bg-bg-subtle transition-colors"
+      >
+        Go Home
+      </a>
+    </div>
+  </section>
+</BaseLayout>

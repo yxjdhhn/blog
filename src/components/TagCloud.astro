@@ -1,0 +1,22 @@
+---
+import { getLangFromUrl, getLocalizedUrl } from '@/i18n/utils';
+
+interface Props {
+  tags: Map<string, number>;
+}
+
+const { tags } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+---
+
+<div class="flex flex-wrap gap-2">
+  {[...tags.entries()].map(([tag, count]) => (
+    <a
+      href={getLocalizedUrl(lang, `/tags/${tag}/`)}
+      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-bg-subtle text-body hover:bg-primary-bg-hover hover:text-primary-hover transition-colors"
+    >
+      #{tag}
+      <span class="text-xs text-muted">({count})</span>
+    </a>
+  ))}
+</div>

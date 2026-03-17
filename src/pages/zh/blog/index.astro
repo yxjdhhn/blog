@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import { getPostsByLang } from '@/utils/posts';
+import { t } from '@/i18n/utils';
+import type { Lang } from '@/i18n/translations';
+
+const lang: Lang = 'zh';
+const posts = await getPostsByLang(lang);
+---
+
+<BaseLayout title={`${t(lang, 'nav.blog')} | ${t(lang, 'site.title')}`} description={t(lang, 'site.description')}>
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold text-heading mb-8">
+      {t(lang, 'nav.blog')}
+    </h1>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post) => (
+        <PostCard post={post} />
+      ))}
+    </div>
+    {posts.length === 0 && (
+      <p class="text-center text-muted py-12">
+        {t(lang, 'search.noResults')}
+      </p>
+    )}
+  </section>
+</BaseLayout>

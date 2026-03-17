@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import TagCloud from '@/components/TagCloud.astro';
+import { getAllTags } from '@/utils/posts';
+import { t } from '@/i18n/utils';
+import type { Lang } from '@/i18n/translations';
+
+const lang: Lang = 'zh';
+const tags = await getAllTags(lang);
+---
+
+<BaseLayout title={`${t(lang, 'tag.allTags')} | ${t(lang, 'site.title')}`} description={t(lang, 'site.description')}>
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold text-heading mb-8">
+      {t(lang, 'tag.allTags')}
+    </h1>
+    <TagCloud tags={tags} />
+  </section>
+</BaseLayout>

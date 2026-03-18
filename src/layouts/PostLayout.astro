@@ -18,73 +18,8 @@ const readingTime = estimateReadingTime(post.body || '');
 ---
 
 <BaseLayout title={`${post.data.title} | ${t(lang, 'site.title')}`} description={post.data.description} image={post.data.heroImage}>
-  <article class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-    <!-- Article header -->
-    <header class="max-w-3xl mx-auto mb-8">
-      {post.data.heroImage && (
-        <div class="relative mb-8 w-full h-56 sm:h-72 md:h-80 lg:h-96 overflow-hidden rounded-xl border border-border bg-bg-subtle shadow-lg">
-          <img
-            src={post.data.heroImage}
-            alt={post.data.title}
-            class="relative z-10 w-full h-full object-center"
-            loading="eager"
-            decoding="async"
-          />
-        </div>
-      )}
-
-      <div class="flex items-center gap-2 text-sm text-muted mb-4">
-        <time datetime={post.data.pubDate.toISOString()}>
-          {t(lang, 'post.published')} {formatDate(post.data.pubDate, lang)}
-        </time>
-        {post.data.updatedDate && (
-          <>
-            <span>&middot;</span>
-            <time datetime={post.data.updatedDate.toISOString()}>
-              {t(lang, 'post.updated')} {formatDate(post.data.updatedDate, lang)}
-            </time>
-          </>
-        )}
-        <span>&middot;</span>
-        <span>{readingTime} {t(lang, 'post.minRead')}</span>
-      </div>
-
-      <h1 class="text-3xl sm:text-4xl font-bold text-heading mb-4 leading-tight">
-        {post.data.title}
-      </h1>
-
-      <p class="text-lg text-secondary mb-4">
-        {post.data.description}
-      </p>
-
-      <div class="flex flex-wrap items-center gap-2">
-        {post.data.category && (
-          <a
-            href={getLocalizedUrl(lang, `/categories/${post.data.category}/`)}
-            class="text-xs px-3 py-1 rounded-full bg-primary-bg-hover text-primary-hover font-medium hover:bg-primary-bg-strong transition-colors"
-          >
-            {post.data.category}
-          </a>
-        )}
-        {post.data.tags.map((tag) => (
-          <a
-            href={getLocalizedUrl(lang, `/tags/${tag}/`)}
-            class="text-xs px-2.5 py-0.5 rounded-full bg-bg-subtle text-secondary hover:bg-primary-bg-hover hover:text-primary-hover transition-colors"
-          >
-            #{tag}
-          </a>
-        ))}
-      </div>
-    </header>
-
-    <!-- Content + TOC layout -->
+  <article class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
     <div class="flex gap-10 justify-center">
-      <!-- Article content -->
-      <div class="prose max-w-3xl flex-1 min-w-0" data-pagefind-body>
-        <slot />
-      </div>
-
-      <!-- Sidebar TOC (desktop only) -->
       {headings.length > 0 && (
         <aside class="hidden xl:block w-56 shrink-0">
           <div class="sticky top-24">
@@ -92,11 +27,76 @@ const readingTime = estimateReadingTime(post.body || '');
           </div>
         </aside>
       )}
-    </div>
 
-    <!-- Comments -->
-    <div class="max-w-3xl mx-auto mt-16">
-      <Comments />
+      <div class="w-full max-w-3xl min-w-0">
+        <!-- Article header -->
+        <header class="max-w-3xl mx-auto mb-8">
+          {post.data.heroImage && (
+            <div class="relative mb-8 w-full h-56 sm:h-72 md:h-80 lg:h-96 overflow-hidden rounded-xl border border-border bg-bg-subtle shadow-lg">
+              <img
+                src={post.data.heroImage}
+                alt={post.data.title}
+                class="relative z-10 w-full h-full object-center"
+                loading="eager"
+                decoding="async"
+              />
+            </div>
+          )}
+
+          <div class="flex items-center gap-2 text-sm text-muted mb-4">
+            <time datetime={post.data.pubDate.toISOString()}>
+              {t(lang, 'post.published')} {formatDate(post.data.pubDate, lang)}
+            </time>
+            {post.data.updatedDate && (
+              <>
+                <span>&middot;</span>
+                <time datetime={post.data.updatedDate.toISOString()}>
+                  {t(lang, 'post.updated')} {formatDate(post.data.updatedDate, lang)}
+                </time>
+              </>
+            )}
+            <span>&middot;</span>
+            <span>{readingTime} {t(lang, 'post.minRead')}</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-4xl font-bold text-heading mb-4 leading-tight">
+            {post.data.title}
+          </h1>
+
+          <p class="text-lg text-secondary mb-4">
+            {post.data.description}
+          </p>
+
+          <div class="flex flex-wrap items-center gap-2">
+            {post.data.category && (
+              <a
+                href={getLocalizedUrl(lang, `/categories/${post.data.category}/`)}
+                class="text-xs px-3 py-1 rounded-full bg-primary-bg-hover text-primary-hover font-medium hover:bg-primary-bg-strong transition-colors"
+              >
+                {post.data.category}
+              </a>
+            )}
+            {post.data.tags.map((tag) => (
+              <a
+                href={getLocalizedUrl(lang, `/tags/${tag}/`)}
+                class="text-xs px-2.5 py-0.5 rounded-full bg-bg-subtle text-secondary hover:bg-primary-bg-hover hover:text-primary-hover transition-colors"
+              >
+                #{tag}
+              </a>
+            ))}
+          </div>
+        </header>
+
+        <!-- Article content -->
+        <div class="prose max-w-none" data-pagefind-body>
+          <slot />
+        </div>
+
+        <!-- Comments -->
+        <div class="mt-16">
+          <Comments />
+        </div>
+      </div>
     </div>
   </article>
 </BaseLayout>

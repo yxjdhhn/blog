@@ -9,7 +9,7 @@ export const defaultLang: Lang = 'zh';
 
 export const ui = {
   zh: {
-    'site.title': '元霄节快乐的博客',
+    'site.title': '我的博客',
     'site.description': '分享知识与观点',
     'nav.home': '首页',
     'nav.blog': '文章',
@@ -34,7 +34,7 @@ export const ui = {
     'pagination.page': '第 {page} 页',
     'home.latestPosts': '最新文章',
     'home.viewAll': '查看全部',
-    'home.greeting': '欢迎来到元霄节快乐的博客',
+    'home.greeting': '欢迎来到我的博客',
     'home.subtitle': '在这里分享我的知识、经验和观点',
     'about.title': '关于我',
     'about.sectionWho': '我是谁',
@@ -49,7 +49,7 @@ export const ui = {
     'comments.title': '评论',
   },
   en: {
-    'site.title': 'allegria\'s Blog',
+    'site.title': 'My Blog',
     'site.description': 'Share knowledge and insights',
     'nav.home': 'Home',
     'nav.blog': 'Blog',
@@ -74,7 +74,7 @@ export const ui = {
     'pagination.page': 'Page {page}',
     'home.latestPosts': 'Latest Posts',
     'home.viewAll': 'View all',
-    'home.greeting': 'Welcome to allegria\'s Blog',
+    'home.greeting': 'Welcome to my Blog',
     'home.subtitle': 'Sharing my knowledge, experience and insights',
     'about.title': 'About Me',
     'about.sectionWho': 'Who I am',

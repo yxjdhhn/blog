@@ -1,54 +1,28 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PostCard from '@/components/PostCard.astro';
-import TagCloud from '@/components/TagCloud.astro';
-import { getPostsByLang, getAllTags } from '@/utils/posts';
-import { t, getLocalizedUrl } from '@/i18n/utils';
+import { getPostsByLang } from '@/utils/posts';
+import { t } from '@/i18n/utils';
 import type { Lang } from '@/i18n/translations';
 
 const lang: Lang = 'en';
 const posts = await getPostsByLang(lang);
-const latestPosts = posts.slice(0, 6);
-const tags = await getAllTags(lang);
 ---
 
 <BaseLayout title={t(lang, 'site.title')} description={t(lang, 'site.description')}>
-  <section class="max-w-5xl mx-auto px-4 sm:px-6 pt-16 pb-12">
-    <div class="text-center">
-      <h1 class="text-4xl sm:text-5xl font-bold text-heading mb-4 leading-tight">
-        {t(lang, 'home.greeting')}
-      </h1>
-      <p class="text-lg text-secondary max-w-2xl mx-auto">
-        {t(lang, 'home.subtitle')}
-      </p>
-    </div>
-  </section>
-
-  <section class="max-w-5xl mx-auto px-4 sm:px-6 pb-16">
-    <div class="flex items-center justify-between mb-8">
-      <h2 class="text-2xl font-bold text-heading">
-        {t(lang, 'home.latestPosts')}
-      </h2>
-      <a
-        href={getLocalizedUrl(lang, '/blog/')}
-        class="text-sm font-medium text-primary hover:text-primary-hover transition-colors"
-      >
-        {t(lang, 'home.viewAll')} &rarr;
-      </a>
-    </div>
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold text-heading mb-8">
+      {t(lang, 'nav.blog')}
+    </h1>
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {latestPosts.map((post) => (
+      {posts.map((post) => (
         <PostCard post={post} />
       ))}
     </div>
+    {posts.length === 0 && (
+      <p class="text-center text-muted py-12">
+        {t(lang, 'search.noResults')}
+      </p>
+    )}
   </section>
-
-  {tags.size > 0 && (
-    <section class="max-w-5xl mx-auto px-4 sm:px-6 pb-16">
-      <h2 class="text-2xl font-bold text-heading mb-6">
-        {t(lang, 'tag.allTags')}
-      </h2>
-      <TagCloud tags={tags} />
-    </section>
-  )}
 </BaseLayout>

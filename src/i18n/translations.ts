@@ -12,7 +12,7 @@ export const ui = {
     'site.title': '我的博客',
     'site.description': '分享知识与观点',
     'nav.home': '首页',
-    'nav.blog': '文章',
+    'nav.blog': '博文',
     'nav.tags': '标签',
     'nav.about': '关于',
     'nav.search': '搜索',

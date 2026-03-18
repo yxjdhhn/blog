@@ -3,7 +3,7 @@ title: 'Markdown Writing Tips & Best Practices'
 description: 'Master advanced Markdown writing techniques to make your blog posts more professional and polished.'
 pubDate: 2026-03-15
 heroImage: '/images/house.jpg'
-tags: ['Markdown', 'Writing', 'Tools']
+tags: ['Markdown', 'Writing', 'Tools', 'Blog']
 category: 'Tools'
 ---
 

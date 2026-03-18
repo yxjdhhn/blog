@@ -3,7 +3,7 @@ title: 'Markdown 写作技巧与最佳实践'
 description: '掌握 Markdown 的进阶写作技巧，让你的博客文章更加专业和美观。'
 pubDate: 2026-03-15
 heroImage: '/images/house.jpg'
-tags: ['Markdown', '写作', '工具']
+tags: ['Markdown', '写作', '工具', '博客']
 category: '工具'
 ---
 

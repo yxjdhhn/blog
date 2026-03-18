@@ -7,16 +7,38 @@ interface Props {
 
 const { tags } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
+
+type TagTier = 'low' | 'mid' | 'high';
+
+const tagItems = [...tags.entries()].map(([tag, count]) => {
+  const tier: TagTier = count >= 3 ? 'high' : count >= 2 ? 'mid' : 'low';
+  return { tag, count, tier };
+});
+
+const tierClasses: Record<TagTier, string> = {
+  low: 'text-xs px-2.5 py-0.5 bg-bg-subtle text-muted hover:bg-bg-subtle-hover hover:text-secondary',
+  mid: 'text-sm px-3 py-1.5 bg-primary-bg text-primary hover:bg-primary-bg-hover hover:text-primary-hover',
+  high: 'text-base px-4 py-2 bg-primary-bg text-primary hover:bg-primary-bg-hover hover:text-primary-hover',
+};
+
+const countClasses: Record<TagTier, string> = {
+  low: 'text-muted',
+  mid: 'text-primary-hover',
+  high: 'text-primary-hover',
+};
 ---
 
 <div class="flex flex-wrap gap-2">
-  {[...tags.entries()].map(([tag, count]) => (
+  {tagItems.map(({ tag, count, tier }) => (
     <a
       href={getLocalizedUrl(lang, `/tags/${tag}/`)}
-      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-bg-subtle text-body hover:bg-primary-bg-hover hover:text-primary-hover transition-colors"
+      class:list={[
+        'inline-flex items-center gap-1.5 rounded-full font-medium transition-all hover:scale-105 hover:shadow-md',
+        tierClasses[tier],
+      ]}
     >
       #{tag}
-      <span class="text-xs text-muted">({count})</span>
+      <span class:list={['text-xs', countClasses[tier]]}>({count})</span>
     </a>
   ))}
 </div>

@@ -3,7 +3,7 @@ title: '使用 Astro 构建个人博客'
 description: '详细介绍如何使用 Astro 框架从零开始搭建一个功能完善的个人博客网站。'
 pubDate: 2026-03-16
 heroImage: '/images/snow.jpg'
-tags: ['Astro', '前端', '教程']
+tags: ['Astro', '前端', '教程', '博客']
 category: '技术'
 ---
 

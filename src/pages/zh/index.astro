@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PostCard from '@/components/PostCard.astro';
+import TagCloud from '@/components/TagCloud.astro';
 import { getPostsByLang, getAllTags } from '@/utils/posts';
 import { t, getLocalizedUrl } from '@/i18n/utils';
 import type { Lang } from '@/i18n/translations';
@@ -50,17 +51,7 @@ const tags = await getAllTags(lang);
       <h2 class="text-2xl font-bold text-heading mb-6">
         {t(lang, 'tag.allTags')}
       </h2>
-      <div class="flex flex-wrap gap-2">
-        {[...tags.entries()].map(([tag, count]) => (
-          <a
-            href={getLocalizedUrl(lang, `/tags/${tag}/`)}
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-bg-subtle text-body hover:bg-primary-bg-hover hover:text-primary-hover transition-colors"
-          >
-            #{tag}
-            <span class="text-xs text-muted">({count})</span>
-          </a>
-        ))}
-      </div>
+      <TagCloud tags={tags} />
     </section>
   )}
 </BaseLayout>

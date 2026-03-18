@@ -9,7 +9,7 @@ export const defaultLang: Lang = 'zh';
 
 export const ui = {
   zh: {
-    'site.title': '我的博客',
+    'site.title': 'yy的博客',
     'site.description': '分享知识与观点',
     'nav.home': '首页',
     'nav.blog': '博文',
@@ -32,11 +32,7 @@ export const ui = {
     'pagination.prev': '上一页',
     'pagination.next': '下一页',
     'pagination.page': '第 {page} 页',
-    'home.latestPosts': '最新文章',
-    'home.viewAll': '查看全部',
-    'home.greeting': '欢迎来到我的博客',
-    'home.subtitle': '在这里分享我的知识、经验和观点',
-    'about.title': '关于我',
+    'about.title': '关于yy',
     'about.sectionWho': '我是谁',
     'about.sectionWhat': '在做的事',
     'about.sectionBeyond': '写代码之外',
@@ -49,7 +45,7 @@ export const ui = {
     'comments.title': '评论',
   },
   en: {
-    'site.title': 'My Blog',
+    'site.title': 'yy\'s Blog',
     'site.description': 'Share knowledge and insights',
     'nav.home': 'Home',
     'nav.blog': 'Blog',
@@ -72,11 +68,7 @@ export const ui = {
     'pagination.prev': 'Previous',
     'pagination.next': 'Next',
     'pagination.page': 'Page {page}',
-    'home.latestPosts': 'Latest Posts',
-    'home.viewAll': 'View all',
-    'home.greeting': 'Welcome to my Blog',
-    'home.subtitle': 'Sharing my knowledge, experience and insights',
-    'about.title': 'About Me',
+    'about.title': 'About yy',
     'about.sectionWho': 'Who I am',
     'about.sectionWhat': 'What I do',
     'about.sectionBeyond': 'Beyond code',

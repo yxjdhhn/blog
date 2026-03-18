@@ -47,7 +47,7 @@ blog/
 ├── src/
 │   ├── components/
 │   │   ├── BaseHead.astro        # <head> SEO meta tags, Open Graph
-│   │   ├── Header.astro          # 导航栏 (导航链接, 搜索, 语言/主题切换)
+│   │   ├── Header.astro          # 导航栏 (首页/标签/关于, 搜索, 语言/主题切换)
 │   │   ├── Footer.astro          # 页脚 (社交链接, 版权信息)
 │   │   ├── ThemeToggle.astro     # 深色/浅色模式切换按钮
 │   │   ├── LanguagePicker.astro  # 中/英语言切换器
@@ -73,9 +73,9 @@ blog/
 │   │   ├── 404.astro             # 404 页面
 │   │   ├── rss.xml.ts            # RSS 订阅源
 │   │   ├── zh/                   # 中文版页面
-│   │   │   ├── index.astro               # 首页
+│   │   │   ├── index.astro               # 首页（文章列表）
 │   │   │   ├── about.astro               # 关于我
-│   │   │   ├── blog/index.astro          # 文章列表
+│   │   │   ├── blog/index.astro          # 重定向到 /zh/
 │   │   │   ├── blog/[...slug].astro      # 文章详情
 │   │   │   ├── tags/index.astro          # 标签云
 │   │   │   ├── tags/[tag]/index.astro    # 按标签筛选
@@ -167,8 +167,8 @@ draft: false                   # 设为 true 则不会发布
 
 ```
 /                       → 重定向到 /zh/
-/zh/                    → 中文首页 (最新文章, 标签云)
-/zh/blog/               → 中文文章列表
+/zh/                    → 中文首页（文章列表）
+/zh/blog/               → 重定向到 /zh/
 /zh/blog/<slug>         → 中文文章详情 (含 TOC + 评论)
 /zh/tags/               → 中文标签云
 /zh/tags/<tag>/         → 按标签筛选文章

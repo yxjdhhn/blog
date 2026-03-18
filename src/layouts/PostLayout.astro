@@ -22,11 +22,15 @@ const readingTime = estimateReadingTime(post.body || '');
     <!-- Article header -->
     <header class="max-w-3xl mx-auto mb-8">
       {post.data.heroImage && (
-        <img
-          src={post.data.heroImage}
-          alt={post.data.title}
-          class="w-full rounded-xl mb-8 shadow-lg"
-        />
+        <div class="relative mb-8 w-full h-56 sm:h-72 md:h-80 lg:h-96 overflow-hidden rounded-xl border border-border bg-bg-subtle shadow-lg">
+          <img
+            src={post.data.heroImage}
+            alt={post.data.title}
+            class="relative z-10 w-full h-full object-center"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
       )}
 
       <div class="flex items-center gap-2 text-sm text-muted mb-4">

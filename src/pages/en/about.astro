@@ -7,31 +7,76 @@ const lang: Lang = 'en';
 ---
 
 <BaseLayout title={`${t(lang, 'about.title')} | ${t(lang, 'site.title')}`} description={t(lang, 'site.description')}>
-  <section class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-    <h1 class="text-3xl font-bold text-heading mb-8">
-      {t(lang, 'about.title')}
-    </h1>
-
-    <div class="prose">
-      <p>
-        Hello! Welcome to my personal blog.
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+    <header class="mb-12">
+      <h1 class="text-3xl sm:text-4xl font-bold text-heading mb-3">
+        {t(lang, 'about.title')}
+      </h1>
+      <p class="text-lg text-secondary">
+        {t(lang, 'site.description')}
       </p>
+    </header>
 
-      <p>
-        I'm a developer passionate about technology. On this blog, I share my insights and experiences
-        in software development, technical exploration, and daily reflections.
-      </p>
+    <div class="prose space-y-12">
+      <!-- Who I am -->
+      <section>
+        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+          {t(lang, 'about.sectionWho')}
+        </h2>
+        <p>
+          Hi! I'm a developer who likes to code and occasionally write blog posts. Here I share what I learn from building software, exploring tech, and everyday thinking—and treat this place as my digital garden, slowly growing and pruning it.
+        </p>
+        <p class="text-secondary">
+          I believe that recording things makes the whole world clearer, so I put everything in Markdown.
+        </p>
+      </section>
 
-      <h2>Contact</h2>
+      <!-- What I do -->
+      <section>
+        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+          {t(lang, 'about.sectionWhat')}
+        </h2>
+        <p>
+          I mainly do front-end development day to day.
+        </p>
+        <p>
+          Besides writing product code, I enjoy tinkering with personal projects and writing posts to document life.
+        </p>
+      </section>
 
-      <p>
-        If you have any questions or ideas, feel free to reach out:
-      </p>
+      <!-- Beyond code -->
+      <section>
+        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+          {t(lang, 'about.sectionBeyond')}
+        </h2>
+        <p>
+          When I'm not at the keyboard, I read, listen to podcasts, and get outside. I sometimes take photos and travel. If that sounds like you, feel free to leave a message on <a href="https://yyykit.com" target="_blank" rel="noopener noreferrer">my website</a>.
+        </p>
+      </section>
 
-      <ul>
-        <li>GitHub: <a href="https://github.com/yxjdhhn" target="_blank" rel="noopener noreferrer">@yxjdhhn</a></li>
-        <li>Email: yyykit2635@163.com</li>
-      </ul>
+      <!-- Currently -->
+      <section class="rounded-xl border border-border bg-bg-secondary p-6">
+        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+          {t(lang, 'about.sectionCurrently')}
+        </h2>
+        <p class="mb-0">
+          Lately I've been interested in Vibe Coding and playing with things I enjoy. If there's a topic you'd like to see or you have a good idea, drop me a line.
+        </p>
+      </section>
+
+      <!-- Contact -->
+      <section>
+        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+          {t(lang, 'about.sectionContact')}
+        </h2>
+        <p>
+          {t(lang, 'about.contactIntro')}
+        </p>
+        <ul>
+          <li>GitHub: <a href="https://github.com/yxjdhhn" target="_blank" rel="noopener noreferrer">@yxjdhhn</a></li>
+          <li>Email: <a href="mailto:yyykit2635@163.com">yyykit2635@163.com</a></li>
+        </ul>
+      </section>
     </div>
-  </section>
+  </article>
 </BaseLayout>

@@ -7,31 +7,76 @@ const lang: Lang = 'zh';
 ---
 
 <BaseLayout title={`${t(lang, 'about.title')} | ${t(lang, 'site.title')}`} description={t(lang, 'site.description')}>
-  <section class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-    <h1 class="text-3xl font-bold text-heading mb-8">
-      {t(lang, 'about.title')}
-    </h1>
-
-    <div class="prose">
-      <p>
-        你好！欢迎来到我的个人博客。
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+    <header class="mb-12">
+      <h1 class="text-3xl sm:text-4xl font-bold text-heading mb-3">
+        {t(lang, 'about.title')}
+      </h1>
+      <p class="text-lg text-secondary">
+        {t(lang, 'site.description')}
       </p>
+    </header>
 
-      <p>
-        我是一名热爱技术的开发者，在这个博客上，我会分享我在软件开发、技术探索和日常思考中的收获和见解。
-      </p>
-      
+    <div class="prose space-y-12">
+      <!-- 我是谁 -->
+      <section>
+        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+          {t(lang, 'about.sectionWho')}
+        </h2>
+        <p>
+          你好！我是一名喜欢写代码和偶尔写写博客的开发者。在这里我会分享在软件开发、技术探索和日常思考中的收获与见解，也把这里当作自己的数字花园，慢慢积累和修剪。
+        </p>
+        <p class="text-secondary">
+          相信记录会让整个世界更清晰，所以用 Markdown 记一切。
+        </p>
+      </section>
 
-      <h2>联系我</h2>
+      <!-- 在做的事：可替换成你的技术方向 / 技能 -->
+      <section>
+        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+          {t(lang, 'about.sectionWhat')}
+        </h2>
+        <p>
+          日常主要做前端开发。
+        </p>
+        <p>
+          除了写业务代码，也喜欢折腾点个人项目，写点文章记录生活。
+        </p>
+      </section>
 
-      <p>
-        如果你有任何问题或想法，欢迎通过以下方式联系我：
-      </p>
+      <!-- 写代码之外：可选，不需要可整段删掉 -->
+      <section>
+        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+          {t(lang, 'about.sectionBeyond')}
+        </h2>
+        <p>
+          不敲键盘的时候，会看看书、听听播客、出门走走。偶尔拍照、旅旅游。如果你有同好，欢迎在 <a href="https://yyykit.com" target="_blank" rel="noopener noreferrer">我的网站</a>给我留言。
+        </p>
+      </section>
 
-      <ul>
-        <li>GitHub: <a href="https://github.com/yxjdhhn" target="_blank" rel="noopener noreferrer">@yxjdhhn</a></li>
-        <li>Email: yyykit2635@163.com</li>
-      </ul>
+      <!-- 最近在做什么：可选，可改成你当前的学习/项目 -->
+      <section class="rounded-xl border border-border bg-bg-secondary p-6">
+        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+          {t(lang, 'about.sectionCurrently')}
+        </h2>
+        <p class="mb-0">
+          最近对vibe Coding感兴趣，在折腾一些自己喜欢的东西，如果你有特别想看的主题或者好的主意，可以说一声。
+        </p>
+      </section>
+
+      <!-- 联系 -->
+      <section>
+        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+          {t(lang, 'about.sectionContact')}
+        </h2>
+        <p>
+          {t(lang, 'about.contactIntro')}
+        </p>
+        <ul>
+          <li>GitHub: <a href="https://github.com/yxjdhhn" target="_blank" rel="noopener noreferrer">@yxjdhhn</a></li>
+          <li>Email: <a href="mailto:yyykit2635@163.com">yyykit2635@163.com</a></li>
+        </ul>
+      </section>
     </div>
-  </section>
+  </article>
 </BaseLayout>

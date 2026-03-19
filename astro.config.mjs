@@ -3,6 +3,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import vercel from '@astrojs/vercel';
+import rehypeCollapsibleCode from './src/plugins/rehype-collapsible-code.js';
 
 export default defineConfig({
   site: 'https://blog.yyykit.com',
@@ -24,6 +25,9 @@ export default defineConfig({
     },
   },
   markdown: {
+    rehypePlugins: [
+      [rehypeCollapsibleCode, { lineThreshold: 1 }],
+    ],
     shikiConfig: {
       themes: {
         light: 'github-light',

@@ -91,6 +91,17 @@ const readingTime = estimateReadingTime(post.body || '');
         <div class="prose max-w-none" data-pagefind-body>
           <slot />
         </div>
+        <script>
+          document.querySelectorAll('.collapsible-code-details').forEach((details) => {
+            const summary = details.querySelector('.collapsible-code-summary');
+            if (!summary) return;
+            const expand = summary.getAttribute('data-expand') || '展开代码';
+            const collapse = summary.getAttribute('data-collapse') || '折叠代码';
+            const update = () => { summary.textContent = details.open ? collapse : expand; };
+            details.addEventListener('toggle', update);
+            update();
+          });
+        </script>
 
         <!-- Comments -->
         <div class="mt-16">

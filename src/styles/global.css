@@ -153,6 +153,45 @@ body {
   margin: 2em 0;
 }
 
+/* 可折叠代码块 */
+.prose .collapsible-code-details {
+  margin: 1.5em 0;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.prose .collapsible-code-summary {
+  padding: 0.5em 1em;
+  font-size: 0.9em;
+  color: var(--color-secondary);
+  background: var(--color-bg-secondary);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.prose .collapsible-code-summary::-webkit-details-marker {
+  display: none;
+}
+
+.prose .collapsible-code-summary::before {
+  content: '▶ ';
+  display: inline-block;
+  margin-right: 0.35em;
+  transition: transform 0.2s ease;
+}
+
+.prose .collapsible-code-details[open] .collapsible-code-summary::before {
+  transform: rotate(90deg);
+}
+
+.prose .collapsible-code-details > pre {
+  margin: 0;
+  border-radius: 0;
+  border: none;
+}
+
 /* Shiki dual theme support */
 html.dark .astro-code,
 html.dark .astro-code span {

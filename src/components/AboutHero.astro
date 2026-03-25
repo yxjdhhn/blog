@@ -1,0 +1,46 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  initials: string;
+  tags: string[];
+  eyebrow?: string;
+}
+
+const { title, description, initials, tags, eyebrow } = Astro.props;
+---
+
+<section class="pb-8">
+  <div class="flex flex-col gap-5 sm:flex-row sm:items-start">
+    <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary-bg text-xl font-semibold tracking-wide text-primary sm:h-16 sm:w-16 sm:text-2xl">
+      {initials}
+    </div>
+
+    <div class="min-w-0">
+      {eyebrow && (
+        <p class="mb-2 text-sm font-medium uppercase tracking-[0.18em] text-muted">
+          {eyebrow}
+        </p>
+      )}
+      <h1 class="text-3xl font-bold tracking-tight text-heading sm:text-4xl">
+        {title}
+      </h1>
+      <p class="mt-3 max-w-2xl text-base leading-7 text-secondary sm:text-lg">
+        {description}
+      </p>
+
+      <div class="mt-5">
+        <slot />
+      </div>
+
+      <div class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
+        {tags.map((tag, index) => (
+          <>
+            {index > 0 && <span class="hidden sm:inline text-border-strong">•</span>}
+            <span>{tag}</span>
+          </>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

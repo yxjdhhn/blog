@@ -2,6 +2,11 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import type { Lang } from '@/i18n/translations';
 
 export type BlogPost = CollectionEntry<'blog'>;
+export interface PostsByMonthGroup {
+  key: string;
+  date: Date;
+  posts: BlogPost[];
+}
 
 export async function getPostsByLang(lang: Lang): Promise<BlogPost[]> {
   const allPosts = await getCollection('blog', ({ data, id }) => {
@@ -41,6 +46,28 @@ export async function getAllCategories(lang: Lang): Promise<Map<string, number>>
 export async function getPostsByCategory(lang: Lang, category: string): Promise<BlogPost[]> {
   const posts = await getPostsByLang(lang);
   return posts.filter((post) => post.data.category === category);
+}
+
+export function groupPostsByMonth(posts: BlogPost[]): PostsByMonthGroup[] {
+  const groups = new Map<string, PostsByMonthGroup>();
+
+  posts.forEach((post) => {
+    const year = post.data.pubDate.getFullYear();
+    const month = post.data.pubDate.getMonth();
+    const key = `${year}-${String(month + 1).padStart(2, '0')}`;
+
+    if (!groups.has(key)) {
+      groups.set(key, {
+        key,
+        date: new Date(year, month, 1),
+        posts: [],
+      });
+    }
+
+    groups.get(key)!.posts.push(post);
+  });
+
+  return [...groups.values()].sort((a, b) => b.date.valueOf() - a.date.valueOf());
 }
 
 export function getSlug(post: BlogPost): string {

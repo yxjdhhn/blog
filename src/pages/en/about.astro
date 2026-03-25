@@ -1,81 +1,55 @@
 ---
+import AboutHero from '@/components/AboutHero.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import ContactLinks from '@/components/ContactLinks.astro';
 import { t } from '@/i18n/utils';
 import type { Lang } from '@/i18n/translations';
 
 const lang: Lang = 'en';
+const heroTags = ['Frontend', 'Side Projects', 'Writing'];
 ---
 
 <BaseLayout title={`${t(lang, 'about.title')} | ${t(lang, 'site.title')}`} description={t(lang, 'site.description')}>
-  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-    <header class="mb-12">
-      <h1 class="text-3xl sm:text-4xl font-bold text-heading mb-3">
-        {t(lang, 'about.title')}
-      </h1>
-      <p class="text-lg text-secondary">
-        {t(lang, 'site.description')}
-      </p>
-    </header>
+  <article class="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
+    <AboutHero
+      title={t(lang, 'about.title')}
+      description="Frontend developer, side-project tinkerer, and someone who likes turning ideas into clearer words, interfaces, and small digital spaces."
+      initials="YY"
+      eyebrow="Personal Space"
+      tags={heroTags}
+    >
+      <ContactLinks />
+    </AboutHero>
 
-    <div class="prose space-y-12">
-      <!-- Who I am -->
-      <section>
-        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+    <div class="space-y-10 border-t border-border pt-10">
+      <section class="space-y-3 text-[15px] leading-7 text-secondary sm:text-base">
+        <h2 class="text-lg font-semibold tracking-tight text-heading sm:text-xl">
           {t(lang, 'about.sectionWho')}
         </h2>
-        <p>
-          Hi! I'm a developer who likes to code and occasionally write blog posts. Here I share what I learn from building software, exploring tech, and everyday thinking—and treat this place as my digital garden, slowly growing and pruning it.
-        </p>
-        <p class="text-secondary">
-          I believe that recording things makes the whole world clearer, so I put everything in Markdown.
-        </p>
+        <p>Hello! I’m a developer who enjoys writing code and occasionally writing blog posts. Here, I share what I’ve learned from software development, technical exploration, and everyday thinking.</p>
+        <p class="text-sm italic leading-6 text-muted sm:text-[15px]">I believe writing things down makes the world a little clearer.</p>
       </section>
 
-      <!-- What I do -->
-      <section>
-        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+      <section class="space-y-3 border-t border-border pt-10 text-[15px] leading-7 text-secondary sm:text-base">
+        <h2 class="text-lg font-semibold tracking-tight text-heading sm:text-xl">
           {t(lang, 'about.sectionWhat')}
         </h2>
-        <p>
-          I mainly do front-end development day to day.
-        </p>
-        <p>
-          Besides writing product code, I enjoy tinkering with personal projects and writing posts to document life.
-        </p>
+        <p>Most of my day-to-day work is in frontend development, with a strong focus on usability, interaction, and maintainable code.</p>
+        <p>Outside work, I build small tools and side projects to test ideas quickly and keep my curiosity active.</p>
       </section>
 
-      <!-- Beyond code -->
-      <section>
-        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
-          {t(lang, 'about.sectionBeyond')}
-        </h2>
-        <p>
-          When I'm not at the keyboard, I read, listen to podcasts, and get outside. I sometimes take photos and travel. If that sounds like you, feel free to leave a message on <a href="https://yyykit.com" target="_blank" rel="noopener noreferrer">my website</a>.
+      <section class="rounded-2xl bg-bg-secondary/70 px-6 py-6 text-[15px] leading-7 text-secondary sm:text-base">
+        <p class="mb-3 text-sm font-medium uppercase tracking-[0.18em] text-muted">
+          {t(lang, 'about.sectionBeyond')} · {t(lang, 'about.sectionCurrently')}
         </p>
-      </section>
-
-      <!-- Currently -->
-      <section class="rounded-xl border border-border bg-bg-secondary p-6">
-        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
-          {t(lang, 'about.sectionCurrently')}
+        <h2 class="text-lg font-semibold tracking-tight text-heading sm:text-xl">
+          Keeping room for curiosity
         </h2>
-        <p class="mb-0">
-          Lately I've been interested in Vibe Coding and playing with things I enjoy. If there's a topic you'd like to see or you have a good idea, drop me a line.
-        </p>
-      </section>
-
-      <!-- Contact -->
-      <section>
-        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
-          {t(lang, 'about.sectionContact')}
-        </h2>
-        <p>
-          {t(lang, 'about.contactIntro')}
-        </p>
-        <ul>
-          <li>GitHub: <a href="https://github.com/yxjdhhn" target="_blank" rel="noopener noreferrer">@yxjdhhn</a></li>
-          <li>Email: <a href="mailto:yyykit2635@163.com">yyykit2635@163.com</a></li>
-        </ul>
+        <div class="mt-4 space-y-3">
+        <p>Away from the screen, I read, listen to podcasts, walk, and occasionally travel or take photos.</p>
+          <p>Those slower moments help me reset my pace and keep my perspective open.</p>
+          <p>Lately I’ve also been exploring AI, Vibe Coding, and more natural ways people and tools can work together while shaping this blog into a space that can keep evolving.</p>
+        </div>
       </section>
     </div>
   </article>

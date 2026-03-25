@@ -1,0 +1,32 @@
+---
+import CompactPostListItem from '@/components/CompactPostListItem.astro';
+import { formatMonthYear } from '@/utils/date';
+import type { Lang } from '@/i18n/translations';
+import type { PostsByMonthGroup } from '@/utils/posts';
+
+interface Props {
+  groups: PostsByMonthGroup[];
+  lang: Lang;
+}
+
+const { groups, lang } = Astro.props;
+---
+
+<div class="space-y-10">
+  {groups.map((group) => (
+    <section>
+      <div class="mb-4 flex items-center gap-4">
+        <h2 class="shrink-0 text-lg font-semibold tracking-tight text-heading sm:text-xl">
+          {formatMonthYear(group.date, lang)}
+        </h2>
+        <div class="h-px flex-1 bg-border" />
+      </div>
+
+      <div class="space-y-4">
+        {group.posts.map((post) => (
+          <CompactPostListItem post={post} />
+        ))}
+      </div>
+    </section>
+  ))}
+</div>

@@ -1,6 +1,6 @@
 ---
-import { formatDate } from '@/utils/date';
-import { getLangFromUrl, t, getLocalizedUrl } from '@/i18n/utils';
+import { formatDateShort } from '@/utils/date';
+import { getLangFromUrl, getLocalizedUrl, t } from '@/i18n/utils';
 import { estimateReadingTime } from '@/i18n/utils';
 import type { BlogPost } from '@/utils/posts';
 import { getSlug } from '@/utils/posts';
@@ -12,32 +12,33 @@ interface Props {
 const { post } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 const slug = getSlug(post);
-const readingTime = estimateReadingTime(post.body || '');
 const postUrl = getLocalizedUrl(lang, `/blog/${slug}`);
+const readingTime = estimateReadingTime(post.body || '');
 const hasHeroImage = Boolean(post.data.heroImage);
 ---
 
 <article
   class:list={[
-    'group overflow-hidden rounded-2xl border border-border bg-bg-card transition-all duration-300 hover:border-primary-border hover:shadow-xl',
-    hasHeroImage && 'md:grid md:grid-cols-[280px_minmax(0,1fr)] md:items-stretch',
+    'group overflow-hidden rounded-xl border border-border bg-bg-card transition-colors duration-300 hover:border-primary-border hover:bg-bg-secondary/40',
+    hasHeroImage && 'grid grid-cols-[112px_minmax(0,1fr)] items-start gap-4 p-4 sm:grid-cols-[136px_minmax(0,1fr)] sm:gap-5',
+    !hasHeroImage && 'p-4 sm:p-5',
   ]}
 >
   {post.data.heroImage && (
-    <a href={postUrl} class="block overflow-hidden bg-bg-subtle md:h-full">
+    <a href={postUrl} class="block h-24 overflow-hidden rounded-lg bg-bg-subtle sm:h-28">
       <img
         src={post.data.heroImage}
         alt={post.data.title}
-        class="h-56 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02] md:h-full"
+        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
         loading="lazy"
       />
     </a>
   )}
 
-  <div class="flex min-w-0 flex-col justify-center p-5 sm:p-6">
-    <div class="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted sm:text-sm">
+  <div class="min-w-0">
+    <div class="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
       <time datetime={post.data.pubDate.toISOString()}>
-        {formatDate(post.data.pubDate, lang)}
+        {formatDateShort(post.data.pubDate, lang)}
       </time>
       <span>&middot;</span>
       <span>{readingTime} {t(lang, 'post.minRead')}</span>
@@ -54,22 +55,22 @@ const hasHeroImage = Boolean(post.data.heroImage);
       )}
     </div>
 
-    <h2 class="mb-3 text-xl font-semibold leading-snug text-heading transition-colors group-hover:text-primary sm:text-2xl">
+    <h2 class="mb-2 text-base font-semibold leading-snug text-heading transition-colors group-hover:text-primary sm:text-lg">
       <a href={postUrl}>
         {post.data.title}
       </a>
     </h2>
 
-    <p class="mb-5 text-sm leading-7 text-secondary line-clamp-3 sm:text-base">
+    <p class="mb-3 text-sm leading-6 text-secondary line-clamp-2 sm:line-clamp-3">
       {post.data.description}
     </p>
 
     {post.data.tags.length > 0 && (
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-1.5">
         {post.data.tags.map((tag) => (
           <a
             href={getLocalizedUrl(lang, `/tags/${tag}/`)}
-            class="rounded-full bg-bg-subtle px-2.5 py-1 text-xs text-secondary transition-colors hover:bg-primary-bg-hover hover:text-primary-hover"
+            class="rounded-full bg-bg-subtle px-2 py-0.5 text-[11px] text-secondary transition-colors hover:bg-primary-bg-hover hover:text-primary-hover"
           >
             #{tag}
           </a>

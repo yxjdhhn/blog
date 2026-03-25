@@ -1,76 +1,55 @@
 ---
+import AboutHero from '@/components/AboutHero.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import ContactLinks from '@/components/ContactLinks.astro';
 import { t } from '@/i18n/utils';
 import type { Lang } from '@/i18n/translations';
 
 const lang: Lang = 'zh';
+const heroTags = ['前端开发', '个人项目', '写作记录'];
 ---
 
 <BaseLayout title={`${t(lang, 'about.title')} | ${t(lang, 'site.title')}`} description={t(lang, 'site.description')}>
-  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-    <header class="mb-12">
-      <h1 class="text-3xl sm:text-4xl font-bold text-heading mb-3">
-        {t(lang, 'about.title')}
-      </h1>
-      <p class="text-lg text-secondary">
-        {t(lang, 'site.description')}
-      </p>
-    </header>
+  <article class="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
+    <AboutHero
+      title={t(lang, 'about.title')}
+      description="前端开发者，喜欢把技术、灵感和日常思考整理成清晰的文字，也把这里当作慢慢生长的数字花园。"
+      initials="YY"
+      eyebrow="Personal Space"
+      tags={heroTags}
+    >
+      <ContactLinks />
+    </AboutHero>
 
-    <div class="prose space-y-12">
-      <section>
-        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+    <div class="space-y-10 border-t border-border pt-10">
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold tracking-tight text-heading sm:text-xl">
           {t(lang, 'about.sectionWho')}
         </h2>
-        <p>
-          你好！我是一名喜欢写代码和偶尔写写博客的开发者。在这里我会分享在软件开发、技术探索和日常思考中的收获与见解，也把这里当作自己的数字花园，慢慢积累和修剪。
-        </p>
-        <p class="text-secondary">
-          相信记录会让整个世界更清晰，所以用 Markdown 记一切。
-        </p>
+        <p>你好！我是一名喜欢写代码，也会偶尔写写博客的开发者。在这里，我会分享自己在软件开发、技术探索和日常思考中的收获与见解。</p>
+        <p class="text-sm italic leading-6 text-muted sm:text-[15px]">相信记录会让世界变得更清晰。</p>
       </section>
 
-      <section>
-        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
+      <section class="space-y-3 border-t border-border pt-10 text-[15px] leading-7 text-secondary sm:text-base">
+        <h2 class="text-lg font-semibold tracking-tight text-heading sm:text-xl">
           {t(lang, 'about.sectionWhat')}
         </h2>
-        <p>
-          日常主要做前端开发。
-        </p>
-        <p>
-          除了写业务代码，也喜欢折腾点个人项目，写点文章记录生活。
-        </p>
+        <p>日常主要做前端开发，关注体验、交互和工程质量之间的平衡。</p>
+        <p>工作之外，会做一些小工具和个人项目，让想法尽快落地，也让自己一直保持手感。</p>
       </section>
 
-      <section>
-        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
-          {t(lang, 'about.sectionBeyond')}
-        </h2>
-        <p>
-          不敲键盘的时候，会看看书、听听播客、出门走走。偶尔拍照、旅旅游。如果你有同好，欢迎在 <a href="https://yyykit.com" target="_blank" rel="noopener noreferrer">我的网站</a>给我留言。
+      <section class="rounded-2xl bg-bg-secondary/70 px-6 py-6 text-[15px] leading-7 text-secondary sm:text-base">
+        <p class="mb-3 text-sm font-medium uppercase tracking-[0.18em] text-muted">
+          {t(lang, 'about.sectionBeyond')} · {t(lang, 'about.sectionCurrently')}
         </p>
-      </section>
-
-      <section class="rounded-xl border border-border bg-bg-secondary p-6">
-        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
-          {t(lang, 'about.sectionCurrently')}
+        <h2 class="text-lg font-semibold tracking-tight text-heading sm:text-xl">
+          让生活和好奇心一起工作
         </h2>
-        <p class="mb-0">
-          最近对vibe Coding感兴趣，在折腾一些自己喜欢的东西，如果你有特别想看的主题或者好的主意，可以说一声。
-        </p>
-      </section>
-
-      <section>
-        <h2 class="text-xl font-semibold text-heading mb-4 border-b border-border pb-2">
-          {t(lang, 'about.sectionContact')}
-        </h2>
-        <p>
-          {t(lang, 'about.contactIntro')}
-        </p>
-        <ul>
-          <li>GitHub: <a href="https://github.com/yxjdhhn" target="_blank" rel="noopener noreferrer">@yxjdhhn</a></li>
-          <li>Email: <a href="mailto:yyykit2635@163.com">yyykit2635@163.com</a></li>
-        </ul>
+        <div class="mt-4 space-y-3">
+        <p>不写代码的时候，我会看书、听播客、散步，也喜欢偶尔拍照和出门走走。</p>
+          <p>这些看起来慢一点的事，往往能帮我把节奏重新调回舒服的状态。</p>
+          <p>最近也在持续关注 AI、Vibe Coding，以及更自然的人机协作方式，顺手把这个博客慢慢打磨成一个可以长期生长的个人空间。</p>
+        </div>
       </section>
     </div>
   </article>

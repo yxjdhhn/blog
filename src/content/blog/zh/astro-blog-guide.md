@@ -1,10 +1,11 @@
 ---
 title: '使用 Astro 构建个人博客'
 description: '详细介绍如何使用 Astro 框架从零开始搭建一个功能完善的个人博客网站。'
-pubDate: 2026-03-16
-heroImage: '/images/snow.jpg'
+pubDate: '2026-03-16'
 tags: ['Astro', '前端', '教程', '博客']
 category: '技术'
+heroImage: '../../../assets/blog/generated/astro-blog-guide.svg'
+imageStatus: 'complete'
 ---
 
 ## 为什么选择 Astro？

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import { Image } from 'astro:assets';
 import TableOfContents from '@/components/TableOfContents.astro';
 import Comments from '@/components/Comments.astro';
 import { formatDate } from '@/utils/date';
@@ -32,13 +33,15 @@ const readingTime = estimateReadingTime(post.body || '');
         <!-- Article header -->
         <header class="max-w-3xl mx-auto mb-8">
           {post.data.heroImage && (
-            <div class="relative mb-8 w-full h-56 sm:h-72 md:h-80 lg:h-96 overflow-hidden rounded-xl border border-border bg-bg-subtle shadow-lg">
-              <img
+            <div class="relative mb-8 w-full overflow-hidden rounded-xl border border-border bg-bg-subtle shadow-lg aspect-[3/2] md:aspect-[16/9]">
+              <Image
                 src={post.data.heroImage}
                 alt={post.data.title}
-                class="relative z-10 w-full h-full object-center"
+                class="relative z-10 h-full w-full object-cover"
                 loading="eager"
-                decoding="async"
+                sizes="(min-width: 1024px) 896px, 100vw"
+                fit="cover"
+                position="center"
               />
             </div>
           )}

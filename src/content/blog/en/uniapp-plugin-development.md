@@ -5,7 +5,22 @@ pubDate: '2026-03-16'
 tags: ['uniapp', '前端', '插件', '经验']
 category: '技术'
 heroImage: '../../../assets/blog/generated/uniapp-plugin-development.svg'
+draft: false
+generatedFrom: 'zh'
+sourceHash: '406ac23a5c4019ef6292a1f64c735140c7a4ca56e8ece2a2808d5f28e5b33e6e'
+translationStatus: 'pending'
 imageStatus: 'complete'
+---
+
+## Translation Pending
+
+The AI translation step was unavailable during the last sync attempt.
+
+- Retry a single post: `npm run posts:retry -- <slug>`
+- Retry all pending posts: `npm run posts:retry -- --pending`
+
+After the retry succeeds, stage the updated files and commit again.
+
 ---
 
 ## **一、插件开发与发布**

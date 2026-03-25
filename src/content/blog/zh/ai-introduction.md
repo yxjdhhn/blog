@@ -1,10 +1,11 @@
 ---
 title: 'AI 相关概念'
 description: '详细介绍AI领域的一些相关术语。'
-pubDate: 2026-03-20
-heroImage: '/images/snow.jpg'
+pubDate: '2026-03-20'
 tags: ['AI', 'Agent', '博客']
 category: '技术'
+heroImage: '../../../assets/blog/generated/ai-introduction.svg'
+imageStatus: 'complete'
 ---
 
 ## 什么是Cursor Rules？

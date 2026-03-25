@@ -1,10 +1,11 @@
 ---
 title: 'Building a Personal Blog with Astro'
 description: 'A comprehensive guide on how to build a full-featured personal blog from scratch using the Astro framework.'
-pubDate: 2026-03-16
-heroImage: '/images/snow.jpg'
+pubDate: '2026-03-16'
 tags: ['Astro', 'Frontend', 'Tutorial', 'Blog']
 category: 'Tech'
+heroImage: '../../../assets/blog/generated/astro-blog-guide.svg'
+imageStatus: 'complete'
 ---
 
 ## Why Astro?

@@ -1,10 +1,11 @@
 ---
 title: 'Hello, World!'
 description: 'This is my first blog post where I share why I started this blog and my future plans.'
-pubDate: 2026-03-17
-heroImage: '/images/coffee.jpg'
+pubDate: '2026-03-17'
 tags: ['Blog', 'Thoughts']
 category: 'Thoughts'
+heroImage: '../../../assets/blog/generated/hello-world.svg'
+imageStatus: 'complete'
 ---
 
 ## Welcome to My Blog

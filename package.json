@@ -3,10 +3,15 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
+    "prepare": "node scripts/setup-hooks.mjs",
     "dev": "astro dev",
     "build": "astro build && npx pagefind --site dist",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "posts:sync": "node scripts/sync-posts.mjs",
+    "posts:sync:staged": "node scripts/sync-posts.mjs --staged --hook",
+    "posts:images:backfill": "node scripts/backfill-images.mjs",
+    "posts:retry": "node scripts/retry-posts.mjs"
   },
   "dependencies": {
     "astro": "^5.5.4",

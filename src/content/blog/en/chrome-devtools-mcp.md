@@ -5,7 +5,22 @@ pubDate: '2026-03-25'
 tags: ['MCP', 'Chrome DevTools', 'AI Agent', '前端调试', '教程']
 category: '技术'
 heroImage: '../../../assets/blog/generated/chrome-devtools-mcp.svg'
+draft: false
+generatedFrom: 'zh'
+sourceHash: '65dc53d2098e275b9064b9510bdf50043f10e6e689c6d858c511a2f5c9041b6a'
+translationStatus: 'pending'
 imageStatus: 'complete'
+---
+
+## Translation Pending
+
+The AI translation step was unavailable during the last sync attempt.
+
+- Retry a single post: `npm run posts:retry -- <slug>`
+- Retry all pending posts: `npm run posts:retry -- --pending`
+
+After the retry succeeds, stage the updated files and commit again.
+
 ---
 
 你应该遇到过这种情况。

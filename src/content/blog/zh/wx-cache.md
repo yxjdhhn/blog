@@ -1,10 +1,11 @@
 ---
 title: '微信网页项目缓存问题'
 description: '解决微信网页项目缓存问题。'
-pubDate: 2026-03-16
-heroImage: '/images/snow.jpg'
+pubDate: '2026-03-16'
 tags: ['uniapp', '前端', '微信']
 category: '技术'
+heroImage: '../../../assets/blog/generated/wx-cache.svg'
+imageStatus: 'complete'
 ---
 
 ## **微信公众号H5相关问题及解决方案**

@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import { formatDateShort } from '@/utils/date';
 import { getLangFromUrl, getLocalizedUrl, t } from '@/i18n/utils';
 import { estimateReadingTime } from '@/i18n/utils';
@@ -26,11 +27,12 @@ const hasHeroImage = Boolean(post.data.heroImage);
 >
   {post.data.heroImage && (
     <a href={postUrl} class="block h-24 overflow-hidden rounded-lg bg-bg-subtle sm:h-28">
-      <img
+      <Image
         src={post.data.heroImage}
         alt={post.data.title}
         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
         loading="lazy"
+        sizes="(min-width: 640px) 136px, 112px"
       />
     </a>
   )}

@@ -11,12 +11,28 @@ export function t(lang: Lang, key: keyof (typeof ui)[typeof defaultLang]): strin
 }
 
 export function getLocalizedUrl(lang: Lang, path: string): string {
-  return `/${lang}${path.startsWith('/') ? path : `/${path}`}`;
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+
+  if (lang === defaultLang) {
+    return normalizedPath;
+  }
+
+  return normalizedPath === '/' ? `/${lang}/` : `/${lang}${normalizedPath}`;
 }
 
 export function switchLang(currentUrl: URL, targetLang: Lang): string {
-  const [, , ...rest] = currentUrl.pathname.split('/');
-  return `/${targetLang}/${rest.join('/')}`;
+  const segments = currentUrl.pathname.split('/').filter(Boolean);
+  const hasLocalePrefix = segments.length > 0 && segments[0] in ui;
+  const rest = hasLocalePrefix ? segments.slice(1) : segments;
+
+  let path = `/${rest.join('/')}`;
+  if (rest.length === 0) {
+    path = '/';
+  } else if (currentUrl.pathname.endsWith('/')) {
+    path += '/';
+  }
+
+  return `${getLocalizedUrl(targetLang, path)}${currentUrl.search}${currentUrl.hash}`;
 }
 
 export function estimateReadingTime(content: string): number {

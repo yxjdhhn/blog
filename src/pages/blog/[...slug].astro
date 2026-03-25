@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import PostLayout from '@/layouts/PostLayout.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ id, data }) => {
@@ -10,10 +11,15 @@ export async function getStaticPaths() {
     const slug = post.id.replace(/^zh\//, '').replace(/\.(md|mdx)$/, '');
     return {
       params: { slug },
+      props: { post },
     };
   });
 }
 
-const { slug } = Astro.params;
-return Astro.redirect(encodeURI(`/blog/${slug}`));
+const { post } = Astro.props;
+const { Content, headings } = await post.render();
 ---
+
+<PostLayout post={post} headings={headings}>
+  <Content />
+</PostLayout>

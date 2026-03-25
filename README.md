@@ -69,17 +69,14 @@ blog/
 │   │   ├── BaseLayout.astro      # 基础 HTML 骨架
 │   │   └── PostLayout.astro      # 文章详情页布局 (TOC + 评论)
 │   ├── pages/
-│   │   ├── index.astro           # 根路径 → 重定向到 /zh/
+│   │   ├── index.astro           # 中文首页（默认语言根路径）
+│   │   ├── about.astro           # 中文关于页
+│   │   ├── blog/                 # 中文博文路由
+│   │   ├── tags/                 # 中文标签路由
+│   │   ├── categories/           # 中文分类路由
 │   │   ├── 404.astro             # 404 页面
 │   │   ├── rss.xml.ts            # RSS 订阅源
-│   │   ├── zh/                   # 中文版页面
-│   │   │   ├── index.astro               # 首页（文章列表）
-│   │   │   ├── about.astro               # 关于我
-│   │   │   ├── blog/index.astro          # 重定向到 /zh/
-│   │   │   ├── blog/[...slug].astro      # 文章详情
-│   │   │   ├── tags/index.astro          # 标签云
-│   │   │   ├── tags/[tag]/index.astro    # 按标签筛选
-│   │   │   └── categories/[category]/index.astro  # 按分类筛选
+│   │   ├── zh/                   # 旧中文路径兼容跳转页
 │   │   └── en/                   # 英文版 (与 zh/ 镜像结构)
 │   ├── styles/
 │   │   └── global.css            # 全局样式 + Tailwind + 文章排版
@@ -154,7 +151,7 @@ draft: false                   # 设为 true 则不会发布
 
 文件名即为 URL slug：
 
-- `src/content/blog/zh/hello-world.md` → `/zh/blog/hello-world`
+- `src/content/blog/zh/hello-world.md` → `/blog/hello-world`
 - `src/content/blog/en/hello-world.md` → `/en/blog/hello-world`
 
 ## 个性化配置
@@ -166,14 +163,14 @@ draft: false                   # 设为 true 则不会发布
 ## 页面路由
 
 ```
-/                       → 重定向到 /zh/
-/zh/                    → 中文首页（文章列表）
-/zh/blog/               → 重定向到 /zh/
-/zh/blog/<slug>         → 中文文章详情 (含 TOC + 评论)
-/zh/tags/               → 中文标签云
-/zh/tags/<tag>/         → 按标签筛选文章
-/zh/categories/<cat>/   → 按分类筛选文章
-/zh/about               → 关于我 (中文)
+/                       → 中文首页（文章列表）
+/blog/                  → 重定向到 /
+/blog/<slug>            → 中文文章详情 (含 TOC + 评论)
+/tags/                  → 中文标签云
+/tags/<tag>/            → 按标签筛选文章
+/categories/<cat>/      → 按分类筛选文章
+/about                  → 关于我 (中文)
+/zh/...                 → 永久重定向到对应的中文无前缀路径
 /en/...                 → 英文版 (镜像结构)
 /rss.xml                → RSS 订阅源
 /404                    → 未找到页面

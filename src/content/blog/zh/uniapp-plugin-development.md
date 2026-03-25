@@ -3,7 +3,7 @@ title: 'uniapp插件开发与发布'
 description: '开发发布常用组件，提高开发效率'
 pubDate: 2026-03-16
 heroImage: '/images/snow.jpg'
-tags: ['uniapp', '前端', '组件', '经验']
+tags: ['uniapp', '前端', '插件', '经验']
 category: '技术'
 ---
 
@@ -18,12 +18,10 @@ category: '技术'
 
 这些组件往往在多个项目中重复开发，导致：
 
-1. 代码重复率高
-
-版本维护混乱
-
-1. 技术资产无法沉淀
-2. 组件规范难以统一
+- 代码重复率高
+- 版本维护混乱
+- 技术资产无法沉淀
+- 组件规范难以统一
 
 为了提高开发效率，可以将这些组件抽象为可复用插件，并发布至 UniApp 插件市场，实现组件资产化与标准化管理。
 
@@ -45,6 +43,7 @@ category: '技术'
 ## **三、插件结构设计**
 
 插件采用官方推荐的 uni_modules 目录规范：
+```
 
 uni_modules/  
 └── scan-section/  
@@ -55,9 +54,10 @@ uni_modules/
 ├── package.json  
 ├── uni_modules.json  
 └── readme.md
-
-scan-section.vue
 ```
+scan-section.vue
+
+```vue
 <template>
   <view class="scan-section">
     <!-- 标题区域 -->
@@ -298,8 +298,8 @@ defineExpose({
 ```
 
 index.js
-```
 
+```js
 import ScanSection from './components/scan-section/scan-section.vue'
 
 const install = (app) => {
@@ -311,9 +311,9 @@ export { ScanSection }
 
 ```
 
-
 package.json
-```
+
+```json
 {
   "id": "scan-section",
   "name": "scan-section",
@@ -373,7 +373,7 @@ package.json
 
 readme.md
 
-```
+```md
 # ScanSection 工业级扫码录入组件
 
 ## 功能特性
@@ -391,9 +391,10 @@ import ScanSection from '@/uni_modules/scan-section'
 app.use(ScanSection)
  
 ```
+
 uni_modules.json
 
-```
+```json
 {
   "id": "scan-section",
   "displayName": "ScanSection 工业级扫码录入组件",
@@ -413,7 +414,7 @@ uni_modules.json
 
 `main.js中全局使用`
 
-```
+```js
 import { createSSRApp } from 'vue'
 import App from './App.vue'
 import ScanSection from '@/uni_modules/scan-section'
@@ -429,7 +430,7 @@ export function createApp() {
 
 `使用组件` 
 
-```
+```vue
 <template>
   <view style="padding:40rpx;">
     <ScanSection
@@ -572,3 +573,4 @@ package.json 未填写 id 字段。
 - 建立内部组件库体系
 - 统一组件版本管理
 - 推动更多业务组件插件化
+

@@ -5,11 +5,13 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { parseMarkdownFile, stringifyMarkdownFile } from './markdown.mjs';
 import { createProviders } from '../providers/index.mjs';
+import { TranslationProviderError, toTranslationError } from '../providers/shared.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 export const ROOT_DIR = resolve(__dirname, '../..');
 export const CONTENT_DIR = resolve(ROOT_DIR, 'src/content/blog');
 export const ASSET_DIR = resolve(ROOT_DIR, 'src/assets/blog/generated');
+export const TRANSLATION_CACHE_DIR = resolve(ROOT_DIR, '.cache/blog-autogen/translation');
 export const PENDING_BODY = `## Translation Pending
 
 The AI translation step was unavailable during the last sync attempt.
@@ -21,6 +23,12 @@ After the retry succeeds, stage the updated files and commit again.`;
 
 const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.svg'];
 const MANAGED_TRANSLATION_STATUSES = new Set(['complete', 'pending']);
+const TRANSLATION_CHECKPOINT_VERSION = 1;
+const TRANSLATION_METADATA_RETRIES = 2;
+const TRANSLATION_CHUNK_RETRIES = 3;
+const TRANSLATION_BACKOFF_MS = [1_000, 3_000, 8_000];
+const TRANSLATION_CHUNK_MAX_CHARS = 2_400;
+const TRANSLATION_CHUNK_MAX_CHINESE = 1_600;
 
 export function loadEnvFiles() {
   for (const fileName of ['.env', '.env.local']) {
@@ -168,8 +176,7 @@ export async function syncChinesePost(sourcePath, options = {}) {
   const sourceHash = createSourceHash(sourcePost);
   const targetPath = getTargetEnglishPath(sourcePost);
   const targetPost = existsSync(targetPath) ? readPost(targetPath) : null;
-
-  const { textProvider, imageProvider } = createProviders(process.env);
+  const { textProvider, imageProvider } = options.providers ?? createProviders(process.env);
   const result = {
     slug: sourcePost.slug,
     changed: false,
@@ -178,6 +185,8 @@ export async function syncChinesePost(sourcePath, options = {}) {
     wrotePendingTranslation: false,
     wrotePendingImage: false,
     skippedLegacyEnglish: false,
+    translationProgress: null,
+    lastTranslationError: null,
   };
 
   const legacyEnglish = targetPost && !targetPost.data.generatedFrom && !targetPost.data.sourceHash;
@@ -197,7 +206,10 @@ export async function syncChinesePost(sourcePath, options = {}) {
 
     if (translationNeeded) {
       if (!options.retryTranslation && currentPendingTranslation) {
+        const checkpoint = readTranslationCheckpoint(sourcePost.slug, sourceHash);
         result.translationStatus = 'pending';
+        result.translationProgress = checkpoint ? getCheckpointProgress(checkpoint) : null;
+        result.lastTranslationError = checkpoint ? checkpoint.lastError : null;
       } else {
         const translated = await generateEnglishDraft(sourcePost, sourceHash, textProvider);
         const nextEnglish = {
@@ -219,10 +231,15 @@ export async function syncChinesePost(sourcePath, options = {}) {
           body: translated.body,
         };
 
-        writePost(targetPath, nextEnglish);
-        result.changed = true;
+        if (shouldWritePost(targetPost, nextEnglish)) {
+          writePost(targetPath, nextEnglish);
+          result.changed = true;
+        }
+
         result.translationStatus = translated.translationStatus;
         result.wrotePendingTranslation = translated.translationStatus === 'pending';
+        result.translationProgress = translated.progress ?? null;
+        result.lastTranslationError = translated.lastError ?? null;
       }
     }
   } else {
@@ -375,35 +392,212 @@ function groupPostsBySlug() {
   return groups;
 }
 
-async function generateEnglishDraft(sourcePost, sourceHash, textProvider) {
-  try {
-    const translation = await textProvider.generateTranslation({
-      slug: sourcePost.slug,
-      title: sourcePost.data.title,
-      description: sourcePost.data.description,
-      category: sourcePost.data.category,
-      tags: sourcePost.data.tags ?? [],
-      body: sourcePost.body,
-    });
+export async function generateEnglishDraft(sourcePost, sourceHash, textProvider) {
+  const chunks = buildTranslationChunks(sourcePost.body);
+  const checkpoint = getOrCreateTranslationCheckpoint({
+    slug: sourcePost.slug,
+    sourceHash,
+    textProvider,
+    chunks,
+  });
 
-    return {
-      ...translation,
-      translationStatus: 'complete',
-      heroImage: undefined,
-      sourceHash,
-    };
+  try {
+    const metadata = await translateMetadata(sourcePost, checkpoint, textProvider);
+    const chunkResult = await translateChunksWithCheckpoint(sourcePost, checkpoint, textProvider);
+
+    if (!chunkResult.complete) {
+      return createPendingTranslationDraft(sourcePost, {
+        progress: getCheckpointProgress(checkpoint),
+        lastError: checkpoint.lastError,
+      });
+    }
+
+    const translated = assembleEnglishDraft(sourcePost, sourceHash, metadata, checkpoint);
+    removeTranslationCheckpoint(sourcePost.slug);
+    return translated;
   } catch (error) {
-    return {
-      title: sourcePost.data.title,
-      description: sourcePost.data.description,
-      category: sourcePost.data.category,
-      tags: sourcePost.data.tags ?? [],
-      body: `${PENDING_BODY}\n\n---\n\n${sourcePost.body.trim()}\n`,
-      translationStatus: 'pending',
-      heroImage: undefined,
-      sourceHash,
-    };
+    checkpoint.lastError = serializeError(error);
+    checkpoint.updatedAt = new Date().toISOString();
+    writeTranslationCheckpoint(checkpoint);
+    return createPendingTranslationDraft(sourcePost, {
+      progress: getCheckpointProgress(checkpoint),
+      lastError: checkpoint.lastError,
+    });
   }
+}
+
+async function translateMetadata(sourcePost, checkpoint, textProvider) {
+  if (checkpoint.metadata.status === 'complete' && checkpoint.metadata.translated) {
+    return checkpoint.metadata.translated;
+  }
+
+  let lastError = checkpoint.metadata.lastError;
+  let attemptsThisRun = 0;
+
+  while (attemptsThisRun < TRANSLATION_METADATA_RETRIES) {
+    attemptsThisRun += 1;
+    checkpoint.metadata.attempts += 1;
+    checkpoint.updatedAt = new Date().toISOString();
+    writeTranslationCheckpoint(checkpoint);
+
+    try {
+      const translated = await textProvider.generateTranslationMetadata({
+        slug: sourcePost.slug,
+        title: sourcePost.data.title,
+        description: sourcePost.data.description,
+        category: sourcePost.data.category,
+        tags: sourcePost.data.tags ?? [],
+        outline: extractMarkdownOutline(sourcePost.body),
+      });
+
+      checkpoint.metadata = {
+        status: 'complete',
+        attempts: checkpoint.metadata.attempts,
+        translated,
+        lastError: null,
+      };
+      checkpoint.lastError = null;
+      checkpoint.updatedAt = new Date().toISOString();
+      writeTranslationCheckpoint(checkpoint);
+      return translated;
+    } catch (error) {
+      lastError = serializeError(error);
+      checkpoint.metadata.lastError = lastError;
+      checkpoint.lastError = lastError;
+      checkpoint.updatedAt = new Date().toISOString();
+      writeTranslationCheckpoint(checkpoint);
+
+      if (attemptsThisRun < TRANSLATION_METADATA_RETRIES) {
+        await sleep(getBackoffMs(attemptsThisRun - 1));
+      }
+    }
+  }
+
+  throw new TranslationProviderError(
+    lastError?.code || 'unknown',
+    lastError?.message || 'Failed to translate metadata.'
+  );
+}
+
+async function translateChunksWithCheckpoint(sourcePost, checkpoint, textProvider) {
+  for (let index = 0; index < checkpoint.chunks.length; index += 1) {
+    const chunk = checkpoint.chunks[index];
+    if (chunk.status === 'complete' && chunk.translatedBody) {
+      continue;
+    }
+
+    let translatedBody = null;
+    let attemptsThisRun = 0;
+
+    while (attemptsThisRun < TRANSLATION_CHUNK_RETRIES) {
+      attemptsThisRun += 1;
+      chunk.attempts += 1;
+      checkpoint.updatedAt = new Date().toISOString();
+      writeTranslationCheckpoint(checkpoint);
+
+      try {
+        translatedBody = await textProvider.generateTranslationChunk({
+          slug: sourcePost.slug,
+          title: sourcePost.data.title,
+          body: chunk.sourceBody,
+          sectionHeading: chunk.heading,
+          previousHeading: checkpoint.chunks[index - 1]?.heading ?? null,
+          chunkIndex: index,
+          chunkCount: checkpoint.chunks.length,
+        });
+
+        chunk.status = 'complete';
+        chunk.translatedBody = ensureTrailingNewline(translatedBody);
+        chunk.lastError = null;
+        checkpoint.lastError = null;
+        checkpoint.updatedAt = new Date().toISOString();
+        writeTranslationCheckpoint(checkpoint);
+        break;
+      } catch (error) {
+        chunk.lastError = serializeError(error);
+        checkpoint.lastError = chunk.lastError;
+        checkpoint.updatedAt = new Date().toISOString();
+        writeTranslationCheckpoint(checkpoint);
+
+        if (attemptsThisRun < TRANSLATION_CHUNK_RETRIES) {
+          await sleep(getBackoffMs(attemptsThisRun - 1));
+        }
+      }
+    }
+
+    if (!translatedBody) {
+      return { complete: false };
+    }
+  }
+
+  return { complete: true };
+}
+
+function assembleEnglishDraft(sourcePost, sourceHash, metadata, checkpoint) {
+  const body = checkpoint.chunks
+    .map((chunk) => chunk.translatedBody?.trimEnd() ?? '')
+    .filter(Boolean)
+    .join('\n\n')
+    .trimEnd();
+
+  return {
+    title: metadata.title || sourcePost.data.title,
+    description: metadata.description || sourcePost.data.description,
+    category: metadata.category || sourcePost.data.category,
+    tags: Array.isArray(metadata.tags) ? metadata.tags : sourcePost.data.tags ?? [],
+    body: ensureTrailingNewline(body),
+    translationStatus: 'complete',
+    heroImage: undefined,
+    sourceHash,
+    progress: { completed: checkpoint.chunks.length, total: checkpoint.chunks.length },
+    lastError: null,
+  };
+}
+
+function createPendingTranslationDraft(sourcePost, { progress, lastError }) {
+  return {
+    title: sourcePost.data.title,
+    description: sourcePost.data.description,
+    category: sourcePost.data.category,
+    tags: sourcePost.data.tags ?? [],
+    body: `${PENDING_BODY}\n\n---\n\n${sourcePost.body.trim()}\n`,
+    translationStatus: 'pending',
+    heroImage: undefined,
+    progress,
+    lastError,
+  };
+}
+
+export function buildTranslationChunks(body) {
+  const blocks = parseMarkdownBlocks(body);
+  const sections = createSections(blocks);
+  const chunks = [];
+
+  for (const section of sections) {
+    let currentBlocks = [];
+    let currentMetrics = { totalChars: 0, chineseChars: 0 };
+
+    for (const block of section.blocks) {
+      const nextMetrics = addChunkMetrics(currentMetrics, block.text);
+      if (
+        currentBlocks.length > 0 &&
+        exceedsChunkLimit(nextMetrics)
+      ) {
+        chunks.push(createChunkFromBlocks(currentBlocks, section.heading, chunks.length));
+        currentBlocks = [];
+        currentMetrics = { totalChars: 0, chineseChars: 0 };
+      }
+
+      currentBlocks.push(block);
+      currentMetrics = addChunkMetrics(currentMetrics, block.text);
+    }
+
+    if (currentBlocks.length > 0) {
+      chunks.push(createChunkFromBlocks(currentBlocks, section.heading, chunks.length));
+    }
+  }
+
+  return chunks;
 }
 
 async function ensureSharedImage({
@@ -512,6 +706,289 @@ function createFallbackSvg(slug) {
     extension: '.svg',
     status: 'pending',
   };
+}
+
+function getOrCreateTranslationCheckpoint({ slug, sourceHash, textProvider, chunks }) {
+  const existing = readTranslationCheckpoint(slug, sourceHash);
+  if (existing && checkpointMatchesChunks(existing, chunks)) {
+    return existing;
+  }
+
+  const checkpoint = {
+    version: TRANSLATION_CHECKPOINT_VERSION,
+    slug,
+    sourceHash,
+    provider: textProvider.name ?? 'unknown',
+    model: textProvider.model ?? process.env.AI_TEXT_MODEL ?? 'unknown',
+    updatedAt: new Date().toISOString(),
+    metadata: {
+      status: 'pending',
+      attempts: 0,
+      translated: null,
+      lastError: null,
+    },
+    chunks: chunks.map((chunk) => ({
+      index: chunk.index,
+      heading: chunk.heading,
+      sourceHash: chunk.sourceHash,
+      sourceBody: chunk.body,
+      status: 'pending',
+      attempts: 0,
+      translatedBody: null,
+      lastError: null,
+    })),
+    lastError: null,
+  };
+
+  writeTranslationCheckpoint(checkpoint);
+  return checkpoint;
+}
+
+function checkpointMatchesChunks(checkpoint, chunks) {
+  if (checkpoint.version !== TRANSLATION_CHECKPOINT_VERSION) {
+    return false;
+  }
+
+  if (!Array.isArray(checkpoint.chunks) || checkpoint.chunks.length !== chunks.length) {
+    return false;
+  }
+
+  return checkpoint.chunks.every((chunk, index) => chunk.sourceHash === chunks[index].sourceHash);
+}
+
+function readTranslationCheckpoint(slug, sourceHash) {
+  const checkpointPath = getTranslationCheckpointPath(slug);
+  if (!existsSync(checkpointPath)) {
+    return null;
+  }
+
+  try {
+    const checkpoint = JSON.parse(readFileSync(checkpointPath, 'utf8'));
+    if (checkpoint.sourceHash !== sourceHash) {
+      removeTranslationCheckpoint(slug);
+      return null;
+    }
+    return checkpoint;
+  } catch {
+    removeTranslationCheckpoint(slug);
+    return null;
+  }
+}
+
+export function getTranslationCheckpointPath(slug) {
+  return resolve(TRANSLATION_CACHE_DIR, `${slug}.json`);
+}
+
+function writeTranslationCheckpoint(checkpoint) {
+  const checkpointPath = getTranslationCheckpointPath(checkpoint.slug);
+  mkdirSync(dirname(checkpointPath), { recursive: true });
+  writeFileSync(checkpointPath, JSON.stringify(checkpoint, null, 2), 'utf8');
+}
+
+function removeTranslationCheckpoint(slug) {
+  rmSync(getTranslationCheckpointPath(slug), { force: true });
+}
+
+function getCheckpointProgress(checkpoint) {
+  return {
+    completed: checkpoint.chunks.filter((chunk) => chunk.status === 'complete').length,
+    total: checkpoint.chunks.length,
+  };
+}
+
+function shouldWritePost(currentPost, nextPost) {
+  if (!currentPost) return true;
+  return stringifyMarkdownFile(currentPost.data, currentPost.body) !== stringifyMarkdownFile(nextPost.data, nextPost.body);
+}
+
+function parseMarkdownBlocks(body) {
+  const lines = body.split(/\r?\n/);
+  const blocks = [];
+  let index = 0;
+
+  while (index < lines.length) {
+    const line = lines[index];
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      index += 1;
+      continue;
+    }
+
+    if (/^(```|~~~)/.test(trimmed)) {
+      const fence = trimmed.slice(0, 3);
+      const collected = [line];
+      index += 1;
+      while (index < lines.length) {
+        collected.push(lines[index]);
+        if (lines[index].trim().startsWith(fence)) {
+          index += 1;
+          break;
+        }
+        index += 1;
+      }
+      blocks.push({ type: 'code', text: collected.join('\n') });
+      continue;
+    }
+
+    const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
+    if (headingMatch) {
+      blocks.push({
+        type: 'heading',
+        level: headingMatch[1].length,
+        text: line,
+        heading: stripMarkdownFormatting(headingMatch[2]),
+      });
+      index += 1;
+      continue;
+    }
+
+    if (isTableLine(line)) {
+      const collected = [line];
+      index += 1;
+      while (index < lines.length && lines[index].trim() && isTableLine(lines[index])) {
+        collected.push(lines[index]);
+        index += 1;
+      }
+      blocks.push({ type: 'table', text: collected.join('\n') });
+      continue;
+    }
+
+    if (isListLine(line)) {
+      const collected = [line];
+      index += 1;
+      while (index < lines.length) {
+        const nextLine = lines[index];
+        if (!nextLine.trim()) {
+          const following = lines[index + 1];
+          if (!following || (!isListLine(following) && !isIndentedLine(following))) {
+            break;
+          }
+        }
+        if (!nextLine.trim() || isListLine(nextLine) || isIndentedLine(nextLine)) {
+          collected.push(nextLine);
+          index += 1;
+          continue;
+        }
+        break;
+      }
+      blocks.push({ type: 'list', text: collected.join('\n').trimEnd() });
+      continue;
+    }
+
+    const collected = [line];
+    index += 1;
+    while (index < lines.length) {
+      const nextLine = lines[index];
+      if (!nextLine.trim()) break;
+      if (/^(```|~~~)/.test(nextLine.trim())) break;
+      if (/^(#{1,6})\s+/.test(nextLine)) break;
+      if (isTableLine(nextLine) || isListLine(nextLine)) break;
+      collected.push(nextLine);
+      index += 1;
+    }
+    blocks.push({ type: 'paragraph', text: collected.join('\n') });
+  }
+
+  return blocks;
+}
+
+function createSections(blocks) {
+  const sections = [];
+  let current = { heading: null, blocks: [] };
+
+  for (const block of blocks) {
+    if (block.type === 'heading' && block.level >= 2 && block.level <= 3 && current.blocks.length > 0) {
+      sections.push(current);
+      current = { heading: block.heading, blocks: [block] };
+      continue;
+    }
+
+    if (block.type === 'heading' && block.level >= 2 && block.level <= 3) {
+      current.heading = block.heading;
+    }
+
+    current.blocks.push(block);
+  }
+
+  if (current.blocks.length > 0) {
+    sections.push(current);
+  }
+
+  return sections;
+}
+
+function createChunkFromBlocks(blocks, heading, index) {
+  const body = ensureTrailingNewline(blocks.map((block) => block.text.trimEnd()).join('\n\n').trim());
+  return {
+    index,
+    heading,
+    body,
+    sourceHash: createHash('sha256').update(body).digest('hex'),
+  };
+}
+
+function addChunkMetrics(metrics, text) {
+  return {
+    totalChars: metrics.totalChars + text.length,
+    chineseChars: metrics.chineseChars + (text.match(/[\u4e00-\u9fff]/g) || []).length,
+  };
+}
+
+function exceedsChunkLimit(metrics) {
+  return metrics.totalChars > TRANSLATION_CHUNK_MAX_CHARS || metrics.chineseChars > TRANSLATION_CHUNK_MAX_CHINESE;
+}
+
+function extractMarkdownOutline(body) {
+  const headings = body
+    .split(/\r?\n/)
+    .map((line) => line.match(/^(#{1,6})\s+(.*)$/))
+    .filter(Boolean)
+    .map((match) => `${match[1]} ${match[2]}`);
+
+  return headings.slice(0, 30).join('\n');
+}
+
+function stripMarkdownFormatting(value) {
+  return value
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .trim();
+}
+
+function isTableLine(line) {
+  return line.includes('|');
+}
+
+function isListLine(line) {
+  return /^\s*(?:[-*+]|\d+\.)\s+/.test(line);
+}
+
+function isIndentedLine(line) {
+  return /^\s{2,}\S/.test(line);
+}
+
+function serializeError(error) {
+  const normalized = toTranslationError(error);
+  return {
+    code: normalized.code ?? 'unknown',
+    message: normalized.message,
+    at: new Date().toISOString(),
+  };
+}
+
+function ensureTrailingNewline(value) {
+  return value ? `${value.replace(/\s+$/, '')}\n` : '';
+}
+
+function sleep(ms) {
+  return new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
+}
+
+function getBackoffMs(index) {
+  return TRANSLATION_BACKOFF_MS[index] ?? TRANSLATION_BACKOFF_MS[TRANSLATION_BACKOFF_MS.length - 1];
 }
 
 function getLangFromPath(postPath) {

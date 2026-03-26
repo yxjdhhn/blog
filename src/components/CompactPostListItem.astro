@@ -21,12 +21,12 @@ const hasHeroImage = Boolean(post.data.heroImage);
 <article
   class:list={[
     'group overflow-hidden rounded-xl border border-border bg-bg-card transition-colors duration-300 hover:border-primary-border hover:bg-bg-secondary/40',
-    hasHeroImage && 'grid grid-cols-[112px_minmax(0,1fr)] items-start gap-4 p-4 sm:grid-cols-[136px_minmax(0,1fr)] sm:gap-5',
+    hasHeroImage && 'grid grid-cols-[112px_minmax(0,1fr)] items-stretch gap-4 p-4 sm:grid-cols-[136px_minmax(0,1fr)] sm:gap-5',
     !hasHeroImage && 'p-4 sm:p-5',
   ]}
 >
   {post.data.heroImage && (
-    <a href={postUrl} class="block h-24 overflow-hidden rounded-lg bg-bg-subtle sm:h-28">
+    <a href={postUrl} class="block h-full min-h-24 self-stretch overflow-hidden rounded-lg bg-bg-subtle sm:min-h-28">
       <Image
         src={post.data.heroImage}
         alt={post.data.title}

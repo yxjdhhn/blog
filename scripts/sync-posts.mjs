@@ -40,6 +40,16 @@ for (const result of changed) {
   console.log(
     `[posts] Synced ${result.slug} (translation: ${result.translationStatus ?? 'n/a'}, image: ${result.imageStatus ?? 'n/a'})`
   );
+  if (result.translationProgress) {
+    console.log(
+      `[posts] Translation progress for ${result.slug}: ${result.translationProgress.completed}/${result.translationProgress.total} chunks complete.`
+    );
+  }
+  if (result.lastTranslationError) {
+    console.log(
+      `[posts] Last translation error for ${result.slug}: ${result.lastTranslationError.code} - ${result.lastTranslationError.message}`
+    );
+  }
 }
 
 for (const result of legacySkipped) {

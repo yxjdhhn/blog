@@ -52,8 +52,10 @@ const lang = getLangFromUrl(Astro.url);
         if (!initialized) {
           initialized = true;
           import('/_pagefind/pagefind-ui.js').then(function(module) {
+            var searchLang = searchDiv.getAttribute('data-lang') || 'zh';
             new module.PagefindUI({
               element: '#pagefind-search',
+              language: searchLang,
               showSubResults: true,
               showImages: false,
             });

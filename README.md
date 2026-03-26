@@ -196,6 +196,7 @@ draft: false                   # 设为 true 则不会发布
 - `translationStatus` 标记为 `pending`
 - 图片仍由本地程序化封面生成
 - `imageStatus` 维持 `complete`
+- 长文章会按块翻译，失败时保存本地恢复进度到 `.cache/`
 
 此时第二次 `git add && git commit` 允许通过，不会反复重试 AI。
 
@@ -209,6 +210,7 @@ draft: false                   # 设为 true 则不会发布
 说明：
 
 - `npm run posts:retry -- <slug>` 主要用于重试 `translationStatus: pending` 的英文稿
+- 重试时会优先复用本地 checkpoint，从失败的块继续，而不是整篇从头翻译
 - 本地程序化封面默认不会进入长期 `pending`
 
 ### 6. 临时跳过自动生成

@@ -2,6 +2,7 @@ node_modules/
 dist/
 .vercel/
 .astro/
+.cache/
 .DS_Store
 *.log
 .env

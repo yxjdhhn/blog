@@ -1,13 +1,16 @@
 ---
-title: 'uniapp插件开发与发布'
-description: '开发发布常用组件，提高开发效率'
+title: uniapp插件开发与发布
+description: 开发发布常用组件，提高开发效率
 pubDate: '2026-03-16'
-tags: ['uniapp', '前端', '插件', '经验']
-category: '技术'
-heroImage: '../../../assets/blog/generated/uniapp-plugin-development.svg'
-imageStatus: 'complete'
+tags:
+  - uniapp
+  - 前端
+  - 插件
+  - 经验
+category: 技术
+heroImage: ../../../assets/blog/generated/uniapp-plugin-development.png
+imageStatus: complete
 ---
-
 ## **一、插件开发与发布**
 
 在日常业务开发过程中，存在大量可复用组件，例如：

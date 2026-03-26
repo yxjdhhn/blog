@@ -98,7 +98,6 @@ function isActive(href: string): boolean {
     if (!btn || !menu || !openIcon || !closeIcon) return;
 
     btn.addEventListener('click', () => {
-      const isOpen = !menu.classList.contains('hidden');
       menu.classList.toggle('hidden');
       openIcon.classList.toggle('hidden');
       closeIcon.classList.toggle('hidden');

@@ -1,13 +1,16 @@
 ---
-title: 'Markdown 写作技巧与最佳实践'
-description: '掌握 Markdown 的进阶写作技巧，让你的博客文章更加专业和美观。'
+title: Markdown 写作技巧与最佳实践
+description: 掌握 Markdown 的进阶写作技巧，让你的博客文章更加专业和美观。
 pubDate: '2026-03-15'
-tags: ['Markdown', '写作', '工具', '博客']
-category: '工具'
-heroImage: '../../../assets/blog/generated/markdown-tips.svg'
-imageStatus: 'complete'
+tags:
+  - Markdown
+  - 写作
+  - 工具
+  - 博客
+category: 工具
+heroImage: ../../../assets/blog/generated/markdown-tips.png
+imageStatus: complete
 ---
-
 ## Markdown 基础回顾
 
 Markdown 是一种轻量级标记语言，让你可以用简洁的语法撰写格式化文本。

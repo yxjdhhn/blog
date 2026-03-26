@@ -6,7 +6,7 @@
 
 - **中英双语** — 基于 Astro i18n 路由，所有页面均有中/英两个版本，一键切换语言
 - **中文单源自动翻译** — 以 `src/content/blog/zh/` 为唯一内容源，提交时自动生成对应英文稿
-- **自动封面图** — 提交时自动生成封面；AI 不可用时回退为占位封面与 `pending` 状态
+- **自动封面图** — 提交时自动生成封面；优先调用 SiliconFlow 真实出图，失败时回退本地封面并标记 `pending`
 - **深色/浅色模式** — 跟随系统偏好，支持手动切换，使用 localStorage 持久化
 - **Markdown / MDX** — 使用 Markdown 撰写文章，支持 MDX 扩展语法
 - **代码语法高亮** — 基于 Shiki，支持 `github-light` / `github-dark` 双主题自动切换
@@ -146,7 +146,10 @@ AI_TEXT_PROVIDER=deepseek-compatible
 AI_TEXT_API_BASE_URL=https://api.deepseek.com
 AI_TEXT_API_KEY=你的_deepseek_api_key
 AI_TEXT_MODEL=deepseek-chat
-AI_IMAGE_PROVIDER=procedural-local
+AI_IMAGE_PROVIDER=siliconflow
+AI_IMAGE_API_BASE_URL=https://api.siliconflow.cn/v1
+AI_IMAGE_MODEL=Qwen/Qwen-Image
+SILICONFLOW_API_KEY=你的_siliconflow_api_key
 SKIP_BLOG_AUTOGEN=0
 ```
 
@@ -156,10 +159,16 @@ SKIP_BLOG_AUTOGEN=0
 - `AI_TEXT_API_BASE_URL`：默认 `https://api.deepseek.com`
 - `AI_TEXT_API_KEY`：你的 DeepSeek API Key
 - `AI_TEXT_MODEL`：默认 `deepseek-chat`，也可切换为 `deepseek-reasoner`
-- `AI_IMAGE_PROVIDER`：默认 `procedural-local`
+- `AI_IMAGE_PROVIDER`：可选 `siliconflow` / `google-gemini` / `procedural-local`
+- `AI_IMAGE_API_BASE_URL`：默认 `https://api.siliconflow.cn/v1`
+- `AI_IMAGE_MODEL`：默认 `Qwen/Qwen-Image`
+- `AI_IMAGE_API_KEY`：通用图片 provider API Key
+- `SILICONFLOW_API_KEY`：SiliconFlow API Key
+- `SILICONFLOW_API_BASE_URL`：可选，自定义 SiliconFlow 兼容网关
+- `GOOGLE_API_KEY`：Google Gemini API Key（仅 `google-gemini` provider）
 
-当前推荐配置是：**DeepSeek 负责翻译，本地程序化封面负责图片**。  
-这意味着你只有一个 DeepSeek Key 也能跑完整自动化，不需要额外图片服务。
+当前推荐配置是：**DeepSeek 负责翻译，SiliconFlow 负责真实封面出图**。  
+如果没有配置图片 key，系统会默认回退为本地程序化封面。
 
 ### 2. 新文章只写中文
 
@@ -185,7 +194,7 @@ draft: false                   # 设为 true 则不会发布
 
 - `pre-commit` 会检查本次暂存的中文文章
 - 若英文稿不存在或已过期，自动生成/更新 `src/content/blog/en/<slug>.md`
-- 若封面不存在，自动生成 `src/assets/blog/generated/<slug>.svg`
+- 若封面不存在，自动生成 `src/assets/blog/generated/<slug>.<ext>`
 - 生成了新文件时，本次 commit 会被中断；你需要先 review，再执行一次 `git add && git commit`
 
 ### 4. AI 不可用时的降级
@@ -194,9 +203,15 @@ draft: false                   # 设为 true 则不会发布
 
 - 自动生成英文占位稿
 - `translationStatus` 标记为 `pending`
-- 图片仍由本地程序化封面生成
-- `imageStatus` 维持 `complete`
+- 图片链路不受影响
 - 长文章会按块翻译，失败时保存本地恢复进度到 `.cache/`
+
+如果 SiliconFlow / Gemini 图片生成失败：
+
+- 自动回退为本地程序化封面
+- `imageStatus` 标记为 `pending`
+- 中文与英文仍共用同一张封面
+- 后续可通过 `posts:retry` 或 `posts:images:backfill` 重新触发真实出图
 
 此时第二次 `git add && git commit` 允许通过，不会反复重试 AI。
 
@@ -211,7 +226,8 @@ draft: false                   # 设为 true 则不会发布
 
 - `npm run posts:retry -- <slug>` 主要用于重试 `translationStatus: pending` 的英文稿
 - 重试时会优先复用本地 checkpoint，从失败的块继续，而不是整篇从头翻译
-- 本地程序化封面默认不会进入长期 `pending`
+- SiliconFlow 封面默认优先生成真实图片；失败时才回退本地程序化封面
+- 因为中英文共用同一张封面，图片 prompt 会尽量避免语言相关文字；若必须出现文字，只允许少量专有名词
 
 ### 6. 临时跳过自动生成
 

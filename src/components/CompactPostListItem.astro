@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import { formatDateShort } from '@/utils/date';
 import { getLangFromUrl, getLocalizedUrl, t } from '@/i18n/utils';
 import { estimateReadingTime } from '@/i18n/utils';
@@ -15,7 +14,11 @@ const lang = getLangFromUrl(Astro.url);
 const slug = getSlug(post);
 const postUrl = getLocalizedUrl(lang, `/blog/${slug}`);
 const readingTime = estimateReadingTime(post.body || '');
-const hasHeroImage = Boolean(post.data.heroImage);
+const heroImage = post.data.heroImage;
+const hasHeroImage = Boolean(heroImage);
+const heroImageSrc = heroImage ? ('src' in heroImage ? heroImage.src : heroImage) : null;
+const heroImageWidth = heroImage && 'width' in heroImage ? heroImage.width : undefined;
+const heroImageHeight = heroImage && 'height' in heroImage ? heroImage.height : undefined;
 ---
 
 <article
@@ -27,12 +30,15 @@ const hasHeroImage = Boolean(post.data.heroImage);
 >
   {post.data.heroImage && (
     <a href={postUrl} class="block h-full min-h-24 self-stretch overflow-hidden rounded-lg bg-bg-subtle sm:min-h-28">
-      <Image
-        src={post.data.heroImage}
+      <img
+        src={heroImageSrc}
         alt={post.data.title}
+        width={heroImageWidth}
+        height={heroImageHeight}
         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
         loading="lazy"
         sizes="(min-width: 640px) 136px, 112px"
+        decoding="async"
       />
     </a>
   )}

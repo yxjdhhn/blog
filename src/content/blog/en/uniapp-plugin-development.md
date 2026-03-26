@@ -8,7 +8,7 @@ tags:
   - Plugin
   - Experience
 category: Technology
-heroImage: ../../../assets/blog/generated/uniapp-plugin-development.svg
+heroImage: ../../../assets/blog/generated/uniapp-plugin-development.png
 draft: false
 generatedFrom: zh
 sourceHash: 406ac23a5c4019ef6292a1f64c735140c7a4ca56e8ece2a2808d5f28e5b33e6e

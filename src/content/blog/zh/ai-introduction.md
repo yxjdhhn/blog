@@ -1,13 +1,15 @@
 ---
-title: 'AI 相关概念'
-description: '详细介绍AI领域的一些相关术语。'
+title: AI 相关概念
+description: 详细介绍AI领域的一些相关术语。
 pubDate: '2026-03-20'
-tags: ['AI', 'Agent', '博客']
-category: '技术'
-heroImage: '../../../assets/blog/generated/ai-introduction.svg'
-imageStatus: 'complete'
+tags:
+  - AI
+  - Agent
+  - 博客
+category: 技术
+heroImage: ../../../assets/blog/generated/ai-introduction.png
+imageStatus: complete
 ---
-
 ## 什么是Cursor Rules？
 
 Cursor Rules也就是Cursor规则，本质上就是一组“开发规范/约束提示”，告诉 AI 在帮你写代码、生成文件时要遵守的规则。类似于你在写 prompt，但它是持久的，全局生效

@@ -1,13 +1,16 @@
 ---
 title: 'Hello, World!'
-description: 'This is my first blog post where I share why I started this blog and my future plans.'
+description: >-
+  This is my first blog post where I share why I started this blog and my future
+  plans.
 pubDate: '2026-03-17'
-tags: ['Blog', 'Thoughts']
-category: 'Thoughts'
-heroImage: '../../../assets/blog/generated/hello-world.svg'
-imageStatus: 'complete'
+tags:
+  - Blog
+  - Thoughts
+category: Thoughts
+heroImage: ../../../assets/blog/generated/hello-world.png
+imageStatus: complete
 ---
-
 ## Welcome to My Blog
 
 Hello! Welcome to my personal blog. This is my first post, and I'd like to take this opportunity to share why I started blogging.

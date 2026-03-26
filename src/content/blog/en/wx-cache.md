@@ -1,17 +1,19 @@
 ---
-title: 'WeChat Web Project Cache Issues'
-description: 'Resolving cache issues in WeChat web projects.'
+title: WeChat Web Project Cache Issues
+description: Resolving cache issues in WeChat web projects.
 pubDate: '2026-03-16'
-tags: ['uniapp', 'frontend', 'WeChat']
-category: 'Technology'
-heroImage: '../../../assets/blog/generated/wx-cache.svg'
+tags:
+  - uniapp
+  - frontend
+  - WeChat
+category: Technology
+heroImage: ../../../assets/blog/generated/wx-cache.png
 draft: false
-generatedFrom: 'zh'
-sourceHash: '038cd2781c662f44602e58c0a265cd02f44f92c9f9b6c5cda65ea0b4777b5462'
-translationStatus: 'complete'
-imageStatus: 'complete'
+generatedFrom: zh
+sourceHash: 038cd2781c662f44602e58c0a265cd02f44f92c9f9b6c5cda65ea0b4777b5462
+translationStatus: complete
+imageStatus: complete
 ---
-
 ## **Related Issues and Solutions for WeChat Official Account H5**
 
 Description of the WeChat Official Account H5 cache issue: Each time accessing the H5 page via the official account link, the old content is displayed, requiring a manual refresh to show the latest content. This problem persists upon re-entering the official account.

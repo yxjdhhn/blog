@@ -13,7 +13,7 @@ tags:
   - Frontend Debugging
   - Tutorial
 category: Technology
-heroImage: ../../../assets/blog/generated/chrome-devtools-mcp.svg
+heroImage: ../../../assets/blog/generated/chrome-devtools-mcp.png
 draft: false
 generatedFrom: zh
 sourceHash: 65dc53d2098e275b9064b9510bdf50043f10e6e689c6d858c511a2f5c9041b6a

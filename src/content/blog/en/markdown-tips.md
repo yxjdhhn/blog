@@ -1,13 +1,18 @@
 ---
-title: 'Markdown Writing Tips & Best Practices'
-description: 'Master advanced Markdown writing techniques to make your blog posts more professional and polished.'
+title: Markdown Writing Tips & Best Practices
+description: >-
+  Master advanced Markdown writing techniques to make your blog posts more
+  professional and polished.
 pubDate: '2026-03-15'
-tags: ['Markdown', 'Writing', 'Tools', 'Blog']
-category: 'Tools'
-heroImage: '../../../assets/blog/generated/markdown-tips.svg'
-imageStatus: 'complete'
+tags:
+  - Markdown
+  - Writing
+  - Tools
+  - Blog
+category: Tools
+heroImage: ../../../assets/blog/generated/markdown-tips.png
+imageStatus: complete
 ---
-
 ## Markdown Basics Recap
 
 Markdown is a lightweight markup language that lets you write formatted text using a simple and clean syntax.

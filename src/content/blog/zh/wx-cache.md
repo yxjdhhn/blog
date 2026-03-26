@@ -1,13 +1,15 @@
 ---
-title: '微信网页项目缓存问题'
-description: '解决微信网页项目缓存问题。'
+title: 微信网页项目缓存问题
+description: 解决微信网页项目缓存问题。
 pubDate: '2026-03-16'
-tags: ['uniapp', '前端', '微信']
-category: '技术'
-heroImage: '../../../assets/blog/generated/wx-cache.svg'
-imageStatus: 'complete'
+tags:
+  - uniapp
+  - 前端
+  - 微信
+category: 技术
+heroImage: ../../../assets/blog/generated/wx-cache.png
+imageStatus: complete
 ---
-
 ## **微信公众号H5相关问题及解决方案**
 
 微信公众号H5缓存问题描述：每次从公众号链接接入H5页面，还是显示原先内容，需要手动刷新之后才能显示最新的内容。再次进入公众号还是会出现这个问题。

@@ -1,13 +1,17 @@
 ---
-title: 'Chrome DevTools MCP 到底有什么用？从安装到上手一次讲清'
-description: '这篇文章介绍 Chrome DevTools MCP 是什么、怎么安装、怎么接到 AI Agent 里，以及它能做什么。'
+title: Chrome DevTools MCP 到底有什么用？从安装到上手一次讲清
+description: 这篇文章介绍 Chrome DevTools MCP 是什么、怎么安装、怎么接到 AI Agent 里，以及它能做什么。
 pubDate: '2026-03-25'
-tags: ['MCP', 'Chrome DevTools', 'AI Agent', '前端调试', '教程']
-category: '技术'
-heroImage: '../../../assets/blog/generated/chrome-devtools-mcp.svg'
-imageStatus: 'complete'
+tags:
+  - MCP
+  - Chrome DevTools
+  - AI Agent
+  - 前端调试
+  - 教程
+category: 技术
+heroImage: ../../../assets/blog/generated/chrome-devtools-mcp.png
+imageStatus: complete
 ---
-
 你应该遇到过这种情况。
 
 项目里有个前端 bug，你把代码丢给 AI，问它“帮我看看为什么按钮点了没反应”。它能做的，往往只是翻源码、猜逻辑、顺手给你改两行。

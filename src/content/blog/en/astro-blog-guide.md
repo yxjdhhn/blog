@@ -1,13 +1,18 @@
 ---
-title: 'Building a Personal Blog with Astro'
-description: 'A comprehensive guide on how to build a full-featured personal blog from scratch using the Astro framework.'
+title: Building a Personal Blog with Astro
+description: >-
+  A comprehensive guide on how to build a full-featured personal blog from
+  scratch using the Astro framework.
 pubDate: '2026-03-16'
-tags: ['Astro', 'Frontend', 'Tutorial', 'Blog']
-category: 'Tech'
-heroImage: '../../../assets/blog/generated/astro-blog-guide.svg'
-imageStatus: 'complete'
+tags:
+  - Astro
+  - Frontend
+  - Tutorial
+  - Blog
+category: Tech
+heroImage: ../../../assets/blog/generated/astro-blog-guide.png
+imageStatus: complete
 ---
-
 ## Why Astro?
 
 Astro is a content-focused web framework that is particularly well-suited for building blogs, documentation sites, and other content-driven websites. It has several notable advantages:

@@ -17,10 +17,6 @@ const groups = groupPostsByMonth(posts);
       title="Notes on code, tools, and everyday thinking"
       description=""
     />
-    <!-- <HomeIntro
-      title="Notes on code, tools, and everyday thinking"
-      description="This is where I collect thoughts from software development, technical exploration, and the occasional reflection. Everything is arranged over time, so it reads more like a quiet archive than a feed."
-    /> -->
     <MonthlyPostList groups={groups} lang={lang} />
     {posts.length === 0 && (
       <p class="text-center text-muted py-12">

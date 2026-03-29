@@ -125,7 +125,7 @@ npm run dev
 | `npm run build`   | 构建生产版本并生成 Pagefind 搜索索引            |
 | `npm run preview` | 本地预览生产构建结果                            |
 | `npm run posts:sync` | 同步全部中文文章并补英文稿/封面               |
-| `npm run posts:images:backfill` | 为历史文章批量回填封面            |
+| `npm run posts:images:backfill` | 为历史文章批量回git填封面            |
 | `npm run posts:retry -- <slug>` | 重试单篇 `pending` 文章           |
 | `npm run posts:retry -- --pending` | 重试全部 `pending` 文章      |
 

@@ -1,13 +1,20 @@
 ---
-title: 微信网页项目缓存问题
-description: 解决微信网页项目缓存问题。
-pubDate: '2026-03-16'
+title: AI相关概念介绍
+description: 介绍Rule、Skill、MCP的概念、用法推荐。
+pubDate: '2026-03-28'
 tags:
-  - uniapp
-  - 前端
-  - 微信
+  - AI
+  - Agent
+  - 推荐
 category: 技术
 heroImage: ../../../assets/blog/generated/prompt.png
 imageStatus: complete
 ---
 
+Rule
+Skill
+MCP
+是什么
+作用
+怎么用
+推荐

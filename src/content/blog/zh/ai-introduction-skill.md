@@ -1,6 +1,6 @@
 ---
 title: AI相关概念介绍
-description: 介绍MCP的概念、用法推荐。
+description: 介绍Skill的概念、用法推荐。
 pubDate: '2026-03-28'
 tags:
   - AI

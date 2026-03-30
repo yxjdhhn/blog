@@ -109,6 +109,61 @@ body {
   border-radius: 0 8px 8px 0;
 }
 
+.prose .article-callout {
+  margin: 1.75em 0;
+  padding: 1.1em 1.2em;
+  border: 1px solid var(--color-primary-border);
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--color-primary-bg) 0%, var(--color-bg-secondary) 100%);
+}
+
+.prose .article-callout > :last-child,
+.prose .article-card > :last-child {
+  margin-bottom: 0;
+}
+
+.prose .article-kicker {
+  margin: 0 0 0.7em;
+  font-size: 0.8em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.prose .article-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.75em 0;
+}
+
+.prose .article-card {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background-color: var(--color-bg-secondary);
+}
+
+.prose .article-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.55em;
+  border-bottom: none;
+  padding-bottom: 0;
+  font-size: 1.05em;
+}
+
+.prose .article-card p {
+  margin-bottom: 0.75em;
+}
+
+.prose .article-callout ul,
+.prose .article-callout ol,
+.prose .article-card ul,
+.prose .article-card ol {
+  margin-bottom: 0;
+}
+
 .prose img {
   border-radius: 8px;
   margin: 1.5em auto;

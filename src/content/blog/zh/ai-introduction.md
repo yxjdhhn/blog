@@ -30,6 +30,30 @@ imageStatus: complete
 
 这篇不讲完整踩坑故事，也不讲产品软文。重点就一件事：把这三层拆开，看清它们在 React 前端工程里各自解决什么问题，适合怎么接，以及哪里最容易用歪。
 
+<div class="article-callout">
+  <p class="article-kicker">先记结论</p>
+  <ul>
+    <li><strong>经常写歪</strong>，先补 <code>Rule</code>。</li>
+    <li><strong>经常重复造轮子</strong>，先拆 <code>Skill</code>。</li>
+    <li><strong>经常靠猜最新信息或页面现场</strong>，再接 <code>MCP</code>。</li>
+  </ul>
+</div>
+
+<div class="article-grid">
+  <div class="article-card">
+    <h3>Rule 解决什么</h3>
+    <p>解决“同一个项目，AI 每次写法都不一样”的问题。</p>
+  </div>
+  <div class="article-card">
+    <h3>Skill 解决什么</h3>
+    <p>解决“下一步到底该怎么做，怎么稳定复用”的问题。</p>
+  </div>
+  <div class="article-card">
+    <h3>MCP 解决什么</h3>
+    <p>解决“没有真实上下文，只能凭印象猜”的问题。</p>
+  </div>
+</div>
+
 ## 先看全景：Rule、Skill、MCP 到底怎么分工
 
 很多团队一上来就把 Prompt、Tools、MCP 混着聊，结果越配越乱。更稳的做法，是先把边界说死。
@@ -48,6 +72,8 @@ imageStatus: complete
 
 其中最容易混淆的，是 `Rule` 和 `MCP`。
 
+> **判断口诀：** 经常跑偏，先加 `Rule`；经常重复，先拆 `Skill`；经常靠猜，先接 `MCP`。
+
 `Rule` 是脑子里的规矩。它决定 Agent 输出时遵守什么边界。
 
 `MCP` 是手里的外部插槽。它决定 Agent 能访问哪些外部信息和工具。
@@ -55,6 +81,8 @@ imageStatus: complete
 一个管认知约束。一个管上下文能力。不是一回事。
 
 ## Rule：从 Lint 到 Prompt 的约束前移
+
+> **一句话理解：** `Rule` 不是事后纠错，而是让 Agent 一开始就别写歪。
 
 ### 底层逻辑
 
@@ -152,7 +180,28 @@ Rule 更适合放这三类内容：
 
 临时需求、业务上下文、具体接口细节，不该堆在 Rule 里。那不是增强，是噪音。
 
+<div class="article-grid">
+  <div class="article-card">
+    <h3>适合写进 Rule 的</h3>
+    <ul>
+      <li>技术栈约束</li>
+      <li>目录和分层约束</li>
+      <li>统一输出格式</li>
+    </ul>
+  </div>
+  <div class="article-card">
+    <h3>不适合写进 Rule 的</h3>
+    <ul>
+      <li>一次性业务口径</li>
+      <li>具体接口字段细节</li>
+      <li>测试账号和发布流程</li>
+    </ul>
+  </div>
+</div>
+
 ## Skill：把 Agent 变成能复用的原子操作
+
+> **一句话理解：** `Skill` 不是“更长的 Prompt”，而是“更小但可复用的动作单元”。
 
 ### 底层逻辑
 
@@ -263,7 +312,18 @@ Skill 最容易走歪的地方，是把它写成“万能任务入口”。
 
 Skill 不求全。求稳。高频动作先拆出来，已经够用了。
 
+<div class="article-callout">
+  <p class="article-kicker">设计 Skill 时只看三件事</p>
+  <ol>
+    <li>输入是不是结构化的。</li>
+    <li>输出是不是可验证的。</li>
+    <li>它是不是只负责一个稳定动作。</li>
+  </ol>
+</div>
+
 ## MCP：把外部上下文接进来，但别接成大杂烩
+
+> **一句话理解：** `MCP` 的重点不是“工具更多了”，而是“外部上下文终于能标准化接进来了”。
 
 ### 底层逻辑
 
@@ -395,6 +455,15 @@ MCP 最常见的问题，不是接不上，而是接太多。
 
 这里不串完整流程，只拆三个高频模块。
 
+<div class="article-callout">
+  <p class="article-kicker">推荐落地顺序</p>
+  <ol>
+    <li>先补 <code>Rule</code>，把工程边界钉住。</li>
+    <li>再拆 <code>Skill</code>，把高频动作标准化。</li>
+    <li>最后接 <code>MCP</code>，给关键场景补实时上下文。</li>
+  </ol>
+</div>
+
 ### 场景 1：列表页脚手架生成
 
 一个后台管理页最常见的起手式，就是列表页。
@@ -443,6 +512,17 @@ MCP 最常见的问题，不是接不上，而是接太多。
 
 这个模块里，MCP 的价值会比纯代码生成更明显。因为它补的是现场信息。
 
+## 一张决策表：现在到底先补哪一层？
+
+如果你读到这里还想问“那我项目里到底先做哪个”，可以直接套下面这张表：
+
+| 当前症状 | 优先补哪层 | 原因 |
+| --- | --- | --- |
+| AI 每次生成代码风格都不一样 | `Rule` | 先把项目边界和输出约束钉死 |
+| 列表页、表单、测试总在重复写 | `Skill` | 先把高频动作抽成可复用单元 |
+| 总要查最新文档、调接口、看页面状态 | `MCP` | 先补真实上下文，减少靠猜 |
+| 三个问题同时存在 | `Rule` → `Skill` → `MCP` | 先稳住边界，再做复用，最后补上下文 |
+
 ## 统一避坑清单
 
 最后把最常见的问题压成一页，方便直接对照。
@@ -464,3 +544,8 @@ MCP 最常见的问题，不是接不上，而是接太多。
 - `MCP` 保证有上下文
 
 这三层搭稳之后，React 项目里很多重复性工作才真正有机会被接住，而且不会把代码库越写越乱。
+
+<div class="article-callout">
+  <p class="article-kicker">最后只记住一句话</p>
+  <p>别把三层混成一个“大 Prompt”。<code>Rule</code> 管边界，<code>Skill</code> 管动作，<code>MCP</code> 管上下文。边界越清楚，AI 在工程里越好用。</p>
+</div>

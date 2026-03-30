@@ -1,165 +1,213 @@
 ---
-title: AI 相关概念
-description: 详细介绍AI领域的一些相关术语。
-pubDate: '2026-03-20'
+title: Rule 怎么用：先把 AI 写代码这件事“管起来”
+description: 从创建、拆分、编写到落地，讲清楚 Rule 该放哪里、写什么、怎么让 AI 长期稳定遵守。
+pubDate: '2026-03-30'
 tags:
   - AI
   - Agent
-  - 博客
+  - Rule
+  - 前端工程化
+  - Prompt
 category: 技术
 heroImage: ../../../assets/blog/generated/ai-introduction.png
 imageStatus: complete
 ---
-## 什么是Cursor Rules？
+如果你已经发现一件事：同一个需求，AI 今天这么写，明天那么写，问题往往不在模型够不够聪明，而在项目边界没被提前说清。
 
-Cursor Rules也就是Cursor规则，本质上就是一组“开发规范/约束提示”，告诉 AI 在帮你写代码、生成文件时要遵守的规则。类似于你在写 prompt，但它是持久的，全局生效
-Cursor Rules 有两种类型：全局规则（User Rules）、项目规则（Project Rules），全局适用于所有项目，项目则只对指定的生效
+`Rule` 这一层，就是把这些边界前移。它不负责讲业务背景，也不负责代替接口文档。它只负责一件事：让 AI 在开始写之前，先知道这个项目里什么能做，什么不能做。
 
-## 使用场景
-统一代码风格（缩进、命名、注释习惯）
-约束技术栈（项目规定只能用 React18，结果 AI 给你写了 React19 新语法）
-固定项目结构（组件必须放在 /components 目录，API 请求要放到 api.ts，但 AI 一不小心就写到别的地方）
-设置安全规则或团队规范（敏感信息不能出现在代码里，要遵守 ESLint 规则）
+<div class="article-callout">
+  <p class="article-kicker">先记一句话</p>
+  <p><code>Rule</code> 是长期有效的项目约束，不是临时需求收纳箱。你写得越清楚，AI 越不容易跑偏。</p>
+</div>
 
-## 应用原理
-大型语言模型不会在补全操作之间保留内存。规则在提示级别提供持久的、可重用的上下文。
+## 简短介绍
 
-应用规则时，规则内容会包含在模型上下文的开头。这为人工智能生成代码、解释编辑或辅助工作流程提供了一致的指导。
+你可以把 `Rule` 理解成 AI 开发场景里的“工程默认值”。
 
-## rules分分类
-可以设置user rules、project rules、team rules、 agent rules
-项目规则:存储在您的代码库中.cursor/rules，进行版本控制，并限定在您的代码库范围内。
+它最适合承载这些内容:
 
-用户规则:全局应用于您的光标环境。由代理（聊天）使用。
+- 技术栈约束
+- 目录和分层规范
+- 组件、Hooks、请求层的写法边界
+- 输出格式要求
 
-团队规则:团队级规则可通过控制面板进行管理。适用于团队版和企业版套餐。
+它不太适合承载这些内容:
 
-代理商.md:Markdown 格式的代理指令。一种简单的替代方案 .cursor/rules。
+- 一次性业务口径
+- 某个接口本周刚改的临时说明
+- 只会在一个任务里出现的细节
 
-在 User Rules 里添加全局规则，例如，设置用中文回答，或者在 Project Rules 里为单个项目配置，例如设置项目编写规则，创建之后Cursor会在项目根目录下生成一个.cursor/rules文件夹，可以在这个文件夹中编写Mardown格式的语法规则。
+更直白一点说，`Rule` 解决的是“写法不稳”的问题，不是“上下文不够”的问题。
 
-## 如何设置
-每条规则都是一个 Markdown 文件，您可以随意命名。Cursor 支持 .markdown.md和.mdc.markdown 扩展名。使用.mdc带有 frontmatter 的文件可以更精确地指定规则的生效时间description和生效条件，globs从而更好地控制规则的执行时机。
+| 适合写进 Rule | 更适合放别处 |
+| --- | --- |
+| 技术栈和目录约束 | 业务背景 |
+| 输出格式要求 | 接口字段说明 |
+| 通用禁用项 | 当前迭代临时口径 |
+| 长期有效的团队规范 | 测试账号和发布信息 |
 
+## 怎么创建
+
+不同客户端对 `Rule` 的叫法不完全一样，但落地思路差不多：分清全局规则和项目规则，然后把高频、稳定的约束放到合适位置。
+
+更稳的做法是这样：
+
+1. 先写一份项目级基线规则，跟代码一起版本管理。
+2. 再补一份个人级规则，只放语言习惯、输出偏好这类不影响团队协作的内容。
+3. 如果规则已经明显分成多个主题，就拆成多份，不要堆成一大坨。
+
+如果你用的是支持项目规则目录的编辑器，可以参考这种组织方式：
+
+```text
+.cursor/
+  rules/
+    project-baseline.md
+    react-components.md
+    api-boundary.md
 ```
-.cursor/rules/
-  react-patterns.mdc       # Rule with frontmatter (description, globs)
-  api-guidelines.md        # Simple markdown rule
-  frontend/                # Organize rules in folders
-    components.md
-```
 
-编写的过程中可以用agent进行智能写rules./create-rule in chat: Type /create-rule in Agent and describe what you want. Agent generates the rule file with proper frontmatter and saves it to .cursor/rules.
-From settings: Open Cursor Settings > Rules, Commands and click + Add Rule. This creates a new rule file in .cursor/rules. From settings you can see all rules and their status.
+这几份文件的职责也要尽量清楚：
 
-rule应用模式
-规则类型	描述
-Always Apply	适用于每次聊天会话
-Apply Intelligently	当代理人根据描述判断其相关性时
-Apply to Specific Files	当文件与指定模式匹配时
-Apply Manually	在聊天中提及 @ 时（例如，@my-rule）
+- `project-baseline.md` 放项目通用约束
+- `react-components.md` 放组件和 hooks 约束
+- `api-boundary.md` 放请求层和数据流边界
 
+第一版不要写太多。能先把最容易出错的三五条钉住，就已经很有价值。
 
-如何创建
-创建规则有两种方法：
+## 怎么编写
 
-/create-rule在聊天窗口中：输入/create-ruleAgent 并描述您的需求。Agent 会生成带有正确 frontmatter 的规则文件并将其保存到指定位置.cursor/rules。
-在设置中：打开Cursor Settings > Rules, Commands并点击+ Add Rule。这将在指定位置创建一个新的规则文件.cursor/rules。在设置中，您可以查看所有规则及其状态。
+写 `Rule` 最关键的，不是字多，而是让 AI 一眼就知道要遵守什么。
 
-编写注意事项：
-规则长度控制在 500 行以内
-将大型规则拆分成多个可组合的规则
-请提供具体示例或参考文件
-避免使用模糊的指导方针。将规则写得像清晰的内部文件一样。
-在聊天中重复提示时重用规则
-引用文件而不是复制其内容——这样可以保持规则简洁，并防止规则随着代码更改而失效。
+一个更容易生效的 Rule，通常会包含四块内容：
 
+1. 项目背景
+2. 结构约束
+3. 输出要求
+4. 禁止事项
 
-将规则提交到 Git，这样整个团队都能受益。当发现 Agent 出错时，请更新规则。您甚至可以@cursor在 GitHub 问题或 PR 中添加标签，让 Agent 为您更新规则。
-团队管理员可以直接通过 Cursor 控制面板创建和管理规则：团队规则创建完成后，将自动应用于所有团队成员，并在控制面板中显示：
-
-## 规则优先级
-内容：团队规则是自由文本格式，不使用项目规则的文件夹结构。
-全局模式：团队规则支持文件级全局模式。设置全局模式（例如 `<filename> **/*.py`）后，规则仅在匹配的文件位于上下文中时生效。未设置全局模式的规则将应用于所有会话。
-适用范围：当团队规则启用时（除非强制执行，否则用户未禁用），该规则将包含在该团队所有存储库和项目的代理（聊天）模型上下文中。
-优先级：规则按以下顺序应用：团队规则 → 项目规则 → 用户规则。所有适用的规则都会合并；当规则之间存在冲突时，以较早发布的规则为准。
-
-推荐
-可以从外部引入rules，例如github上的一些开源rules,
+比如前端项目里，第一版可以直接按下面这个框架写：
 
 ```md
-# 项目背景
-这是一个在线旅游攻略分享平台，前端使用 React + TypeScript + TailwindCSS，
-后端提供 RESTful API。目标是让用户能快速分享和浏览旅游日记。
+# Project Baseline
 
-# 编码标准
-- 所有代码必须使用 TypeScript，不允许使用 JavaScript。
-- 变量命名统一使用 camelCase。
-- React 组件必须使用 PascalCase。
-- 自定义 Hooks 必须以 `use` 开头。
+- Use TypeScript only.
+- Use function components and hooks only.
+- Keep data fetching in `src/services`.
+- Reusable UI components must not contain page-specific request logic.
 
-# 库和框架约束
-- 必须使用 React 18，不要用 React 19 新特性。
-- 样式必须使用 TailwindCSS，不要写内联 style。
-- 网络请求必须使用 `fetch`，不允许用 axios。
+# Directory Rules
 
-# 文件结构
-- 业务组件放在 `src/components` 下。
-- API 调用必须封装在 `src/api` 下。
-- 所有页面文件放在 `src/pages` 下。
-- 公共工具函数放在 `src/utils` 下。
+- Pages live in `src/app`.
+- Shared components live in `src/components`.
+- Hooks live in `src/hooks`.
+- Types live in `src/types`.
 
-# 文档规范
-- 导出的 API 方法必须写 JSDoc 注释。
-- 复杂逻辑的 Hooks 必须写注释，说明参数和返回值。
-- 每个页面组件文件顶部必须有模块说明注释。
+# Output Contract
 
-# 安全规范
-- 不要把明文 API Key、token 写在代码里。
-- 所有配置从 `.env` 里读取，通过 `process.env` 使用。
+- New components must define explicit prop types.
+- Prefer small components over long page files.
+- Explain why `use client` is needed when adding it.
 
+# Avoid
+
+- Do not mix mock data into production pages.
+- Do not inline large request blocks inside JSX files.
 ```
 
+这里有几个很实用的编写原则：
+
+- 一条规则只表达一个意思，不要一段话里塞三层转折。
+- 多写明确动作，少写模糊判断。比如“必须走 `src/services`”就比“注意抽离请求逻辑”更稳。
+- 尽量写“该做什么”和“不要做什么”两面，边界会更清楚。
+- 规则里如果要举例，优先引用真实目录、真实文件名和真实组件约定。
+
+最容易踩坑的是把 Rule 写成百科全书。你一旦把业务背景、接口说明、发布说明全塞进去，真正该被遵守的约束反而会被冲淡。
+
+<div class="article-callout">
+  <p class="article-kicker">更稳的写法</p>
+  <ul>
+    <li>先写最小规则集，只覆盖最常见的错误。</li>
+    <li>AI 连续两三次犯同一种错，再补一条新规则。</li>
+    <li>规则超过一屏还看不清重点时，就该拆文件了。</li>
+  </ul>
+</div>
+
+## 怎么用
+
+`Rule` 不是写完就结束，它真正的价值在于“持续生效”。
+
+更顺手的使用方式通常是：
+
+1. 新项目启动时，先写一份最小基线规则。
+2. 让 AI 先在几个高频任务里跑一轮，比如列表页、表单、接口封装。
+3. 看它稳定犯错的地方，再回头补规则，而不是一开始就想写满。
+4. 临时需求不要塞进 Rule，放在当次对话里说清楚就行。
+
+你可以这样判断该不该加 Rule：
+
+- 这个错误是不是反复出现
+- 这个约束是不是长期有效
+- 这个规则是不是跨多个任务都适用
+
+如果三个答案都是“是”，就值得写进 Rule。
+
+如果只是一次性要求，比如“这周活动页按钮颜色先改成橙色”，那更适合放在当前任务里，不要写进长期规则。
+
+还有一个很好用的判断标准：Rule 适合约束“默认做法”，不适合承载“例外说明”。
+
+## 实例
+
+下面给一个 React 管理后台项目的最小可用 Rule。它不求面面俱到，但足够把高频跑偏点压住。
 
 ```md
-import { defineCollection, z } from 'astro:content';
+# React Admin Rules
 
-const blog = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    pubDate: z.coerce.date(),
-    tags: z.array(z.string()),
-  }),
-});
+- Use TypeScript with strict typing.
+- Use function components only.
+- Keep page files focused on orchestration, not data access details.
+
+# Structure
+
+- Pages live in `src/app`.
+- Shared components live in `src/components`.
+- Data fetching lives in `src/services`.
+- Shared hooks live in `src/hooks`.
+
+# UI
+
+- Search forms should use the shared form wrapper.
+- Table columns should live in dedicated config files.
+- Do not place fetch logic inside reusable components.
+
+# Output
+
+- Add explicit prop types for exported components.
+- Prefer named types over broad `any`.
+- If a page uses `use client`, explain the reason briefly.
 ```
 
-### 灵活的集成
+这份规则特别适合接住下面几类任务：
 
-你可以轻松集成各种工具：
+- 生成列表页骨架
+- 生成搜索表单
+- 拆 hooks
+- 补测试文件
 
-| 功能 | 工具 |
-|------|------|
-| 样式 | Tailwind CSS |
-| 搜索 | Pagefind |
-| 评论 | Giscus |
-| 部署 | Vercel |
+它的特点很明确：不讲业务，只讲工程边界。这样 AI 在不同任务里都能复用。
 
-## 项目结构
+## 建议的使用流程
 
-一个典型的 Astro 博客项目结构如下：
+如果你想把 `Rule` 真正用起来，可以直接照这个顺序走：
 
-```
-blog/
-├── src/
-│   ├── content/    # Markdown 文章
-│   ├── components/ # UI 组件
-│   ├── layouts/    # 页面布局
-│   └── pages/      # 路由页面
-└── public/         # 静态资源
-```
+1. 先写一份 10 到 20 行的项目基线规则。
+2. 先覆盖最容易跑偏的三件事：技术栈、目录分层、输出要求。
+3. 先在高频任务里试用，不要一上来就追求全覆盖。
+4. 遇到重复错误再增量补充，不要把一次性需求写进长期规则。
+5. 规则明显变厚时，按主题拆分成多份。
 
-## 小结
+最后只记一个判断就够了：
 
-Astro 是构建个人博客的绝佳选择。它简单、快速，且拥有丰富的生态系统。如果你正在考虑搭建自己的博客，不妨试试 Astro！
+如果你想解决的是“AI 每次写法都不一样”，先补 `Rule`。如果你想解决的是“AI 不知道下一步该怎么做”，那就该去补 `Skill` 了。
+
+想继续看可复用动作怎么设计，可以接着读 [《Skill 怎么用》](/blog/ai-introduction-skill/)。

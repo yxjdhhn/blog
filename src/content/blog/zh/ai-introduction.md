@@ -54,6 +54,15 @@ imageStatus: complete
   </div>
 </div>
 
+<div class="article-callout">
+  <p class="article-kicker">想直接看怎么用</p>
+  <ul>
+    <li><a href="/blog/ai-introduction-rule/">Rule 怎么创建、怎么拆、怎么写才不臃肿</a></li>
+    <li><a href="/blog/ai-introduction-skill/">Skill 怎么设计输入输出，怎么拆成可复用动作</a></li>
+    <li><a href="/blog/ai-introduction-mcp/">MCP 怎么按场景接入文档、浏览器和设计系统</a></li>
+  </ul>
+</div>
+
 ## 先看全景：Rule、Skill、MCP 到底怎么分工
 
 很多团队一上来就把 Prompt、Tools、MCP 混着聊，结果越配越乱。更稳的做法，是先把边界说死。
@@ -199,6 +208,8 @@ Rule 更适合放这三类内容：
   </div>
 </div>
 
+想继续看 `Rule` 怎么创建、怎么编写、怎么在项目里长期生效，可以接着读 [《Rule 怎么用：先把 AI 写代码这件事“管起来”》](/blog/ai-introduction-rule/)。
+
 ## Skill：把 Agent 变成能复用的原子操作
 
 > **一句话理解：** `Skill` 不是“更长的 Prompt”，而是“更小但可复用的动作单元”。
@@ -320,6 +331,8 @@ Skill 不求全。求稳。高频动作先拆出来，已经够用了。
     <li>它是不是只负责一个稳定动作。</li>
   </ol>
 </div>
+
+想继续看 `Skill` 到底该怎么拆、怎么写、怎么让别人也能复用，可以接着读 [《Skill 怎么用：把高频任务拆成 AI 能复用的动作》](/blog/ai-introduction-skill/)。
 
 ## MCP：把外部上下文接进来，但别接成大杂烩
 
@@ -448,6 +461,8 @@ MCP 最常见的问题，不是接不上，而是接太多。
 原因不复杂。上下文一多，Agent 每次都要在更多信息里找线索。找到的东西还不一定和当前任务相关。
 
 所以 MCP 的原则不是“能接就接”，而是“按场景开”。
+
+想继续看 `MCP` 怎么选场景、怎么配置、怎么在前端开发里真正用起来，可以接着读 [《MCP 怎么用：按场景给 AI 接上真实上下文》](/blog/ai-introduction-mcp/)。
 
 ## React 前端里怎么落地：三个短案例
 

@@ -16,6 +16,7 @@ tags:
   - Next.js
   - TypeScript
 category: Technology
+heroImage: ../../../assets/blog/generated/ai-introduction.png
 draft: false
 generatedFrom: zh
 sourceHash: f499c49b3fd1ea7e7f2c8200b7fe1595a7744194f86a44d10ad24144762faeb4

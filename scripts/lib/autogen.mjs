@@ -609,20 +609,28 @@ async function ensureSharedImage({
   sourceOverridePath,
 }) {
   const managedPosts = [sourcePost.path, companionPostPath].filter(Boolean);
-  const existingStatuses = managedPosts
-    .map((postPath) => readPost(postPath))
-    .map((post) => post.data.imageStatus)
-    .filter(Boolean);
+  const existingPosts = managedPosts.map((postPath) => readPost(postPath));
+  const existingStatuses = existingPosts.map((post) => post.data.imageStatus).filter(Boolean);
   const hasPending = existingStatuses.includes('pending');
-  const hasManagedImage = managedPosts
-    .map((postPath) => readPost(postPath))
-    .some((post) => {
-      const heroImage = String(post.data.heroImage ?? '');
-      return heroImage && !heroImage.startsWith('/images/');
-    });
+  const managedHeroImage = existingPosts
+    .map((post) => String(post.data.heroImage ?? ''))
+    .find((heroImage) => heroImage && !heroImage.startsWith('/images/'));
 
-  if (!retry && hasManagedImage && !hasPending) {
-    return { changed: false, status: 'complete' };
+  if (!retry && managedHeroImage && !hasPending) {
+    const syncedPostPaths = Array.from(new Set([sourceOverridePath ?? sourcePost.path, companionPostPath].filter(Boolean)));
+    let changed = false;
+
+    for (const postPath of syncedPostPaths) {
+      const post = readPost(postPath);
+      if (post.data.heroImage !== managedHeroImage || post.data.imageStatus !== 'complete') {
+        post.data.heroImage = managedHeroImage;
+        post.data.imageStatus = 'complete';
+        writePost(postPath, post);
+        changed = true;
+      }
+    }
+
+    return { changed, status: 'complete' };
   }
 
   let imageResult;

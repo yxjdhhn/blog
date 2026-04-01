@@ -17,18 +17,22 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 4);
 ---
 
 {filteredHeadings.length > 0 && (
-  <nav class="toc" aria-label="Table of Contents">
-    <h3 class="text-sm font-semibold text-heading mb-3 uppercase tracking-wide">
+  <nav
+    class="toc flex max-h-[min(30rem,calc(100dvh-12rem))] flex-col"
+    aria-label="Table of Contents"
+    data-toc
+  >
+    <h3 class="mb-3 shrink-0 text-sm font-semibold uppercase tracking-wide text-heading">
       {t(lang, 'post.toc')}
     </h3>
-    <ul class="space-y-1.5 text-sm">
+    <ul class="toc-scroll min-h-0 space-y-1.5 overflow-y-auto overscroll-contain pr-2 text-sm" data-toc-list>
       {filteredHeadings.map((heading) => (
         <li
           style={`padding-left: ${(heading.depth - 2) * 0.75}rem`}
         >
           <a
             href={`#${heading.slug}`}
-            class="toc-link block py-0.5 text-muted hover:text-primary transition-colors border-l-2 border-transparent pl-3 hover:border-primary"
+            class="toc-link block border-l-2 border-transparent py-0.5 pl-3 text-muted transition-colors hover:border-primary hover:text-primary"
             data-heading-slug={heading.slug}
           >
             {heading.text}
@@ -40,8 +44,16 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 4);
 )}
 
 <script>
+  let cleanupTOC: (() => void) | undefined;
+
   function setupTOC() {
-    const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
+    cleanupTOC?.();
+
+    const toc = document.querySelector<HTMLElement>('[data-toc]');
+    if (!toc) return;
+
+    const tocLinks = [...toc.querySelectorAll<HTMLAnchorElement>('.toc-link')];
+    const tocList = toc.querySelector<HTMLElement>('[data-toc-list]');
     if (tocLinks.length === 0) return;
 
     const headingSlugs = [...tocLinks].map((link) => link.dataset.headingSlug!);
@@ -51,24 +63,118 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 4);
 
     if (headingElements.length === 0) return;
 
+    const topOffset = 96;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let activeSlug = '';
+
+    const scrollActiveLinkIntoView = (slug: string) => {
+      if (!tocList) return;
+
+      const activeIndex = tocLinks.findIndex((link) => link.dataset.headingSlug === slug);
+      if (activeIndex === -1) return;
+
+      const previousLink = tocLinks[activeIndex - 1];
+      const activeLink = tocLinks[activeIndex];
+      const nextLink = tocLinks[activeIndex + 1];
+      const topPadding = 10;
+      const bottomPadding = 10;
+      const reservedAbove = previousLink
+        ? Math.min(
+            Math.max(previousLink.offsetHeight + 12, tocList.clientHeight * 0.18),
+            tocList.clientHeight * 0.3
+          )
+        : 0;
+      const reservedBelow = nextLink
+        ? Math.min(
+            Math.max(nextLink.offsetHeight + 12, tocList.clientHeight * 0.22),
+            tocList.clientHeight * 0.35
+          )
+        : 0;
+
+      const visibleTop = tocList.scrollTop;
+      const visibleBottom = visibleTop + tocList.clientHeight;
+      const linkTop = activeLink.offsetTop;
+      const linkBottom = linkTop + activeLink.offsetHeight;
+      const targetTop = linkTop - topPadding - reservedAbove;
+      const targetBottom = linkBottom + bottomPadding + reservedBelow;
+
+      let nextScrollTop = visibleTop;
+
+      if (targetTop < visibleTop) {
+        nextScrollTop = Math.max(targetTop, 0);
+      } else if (targetBottom > visibleBottom) {
+        nextScrollTop = Math.min(
+          targetBottom - tocList.clientHeight,
+          tocList.scrollHeight - tocList.clientHeight
+        );
+      }
+
+      if (Math.abs(nextScrollTop - visibleTop) < 1) return;
+
+      tocList.scrollTo({
+        top: nextScrollTop,
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      });
+    };
+
+    const setActiveHeading = (slug: string) => {
+      if (!slug || slug === activeSlug) return;
+
+      activeSlug = slug;
+
+      tocLinks.forEach((link) => {
+        const isActive = link.dataset.headingSlug === slug;
+        link.classList.toggle('text-primary', isActive);
+        link.classList.toggle('border-primary', isActive);
+        link.classList.toggle('text-muted', !isActive);
+        link.classList.toggle('border-transparent', !isActive);
+        link.toggleAttribute('aria-current', isActive);
+      });
+
+      scrollActiveLinkIntoView(slug);
+    };
+
+    const getActiveHeadingSlug = () => {
+      let nextActiveSlug = headingElements[0]?.id ?? '';
+
+      for (const heading of headingElements) {
+        if (heading.getBoundingClientRect().top <= topOffset) {
+          nextActiveSlug = heading.id;
+        } else {
+          break;
+        }
+      }
+
+      return nextActiveSlug;
+    };
+
+    const updateActiveHeading = () => {
+      setActiveHeading(getActiveHeadingSlug());
+    };
+
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            tocLinks.forEach((link) => {
-              const isActive = link.dataset.headingSlug === entry.target.id;
-              link.classList.toggle('text-primary', isActive);
-              link.classList.toggle('border-primary', isActive);
-              link.classList.toggle('text-muted', !isActive);
-              link.classList.toggle('border-transparent', !isActive);
-            });
-          }
-        });
+      () => {
+        updateActiveHeading();
       },
-      { rootMargin: '-80px 0px -70% 0px', threshold: 0 }
+      { rootMargin: `-${topOffset}px 0px -70% 0px`, threshold: [0, 1] }
     );
 
     headingElements.forEach((el) => observer.observe(el));
+
+    updateActiveHeading();
+
+    const syncFromHash = () => {
+      const hash = decodeURIComponent(window.location.hash.slice(1));
+      if (!hash) return;
+      setActiveHeading(hash);
+    };
+
+    window.addEventListener('hashchange', syncFromHash);
+
+    cleanupTOC = () => {
+      observer.disconnect();
+      window.removeEventListener('hashchange', syncFromHash);
+    };
   }
 
   setupTOC();

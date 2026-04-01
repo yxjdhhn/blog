@@ -23,7 +23,7 @@ imageStatus: complete
 
 如果这些问题没讲清，MCP 很容易变成一种“听起来很强，但真正用不上”的概念。
 
-这篇就只做一件事：把前端最常见的 `MCP` 用法拆开，从“现成的怎么接”到“自己的怎么写”，给你一条能直接上手的路径。
+这篇就只做一件事：把前端最常见的 `MCP` 用法拆开，从“现成的怎么接”到“自己的怎么写”，一条能直接上手的路径。
 
 <div class="article-callout">
   <p class="article-kicker">先记一句话</p>
@@ -34,7 +34,7 @@ imageStatus: complete
 
 你可以把 `MCP` 理解成 AI 连接外部世界的标准接口。
 
-它和 `Rule`、`Skill` 的分工可以再复习一次：
+它和 `Rule`、`Skill` 的分工是什么：
 
 | 层级 | 它负责什么 |
 | --- | --- |
@@ -89,7 +89,7 @@ imageStatus: complete
 - `chrome-devtools-mcp` 更适合开发态调试，重点是 `Console`、`Network`、DOM、性能现场。
 - `@playwright/mcp` 更适合多步骤自动化、回归流程、表单操作和可重复执行的浏览器任务。
 
-如果你只先装一个浏览器类 MCP，前端开发阶段更推荐先装 `chrome-devtools-mcp`。如果你要让 AI 稳定重跑一整条用户流程，再补 `@playwright/mcp`。
+如果想要先装一个浏览器类 MCP，前端开发阶段更推荐先装 `chrome-devtools-mcp`。如果想让 AI 稳定重跑一整条用户流程，再补 `@playwright/mcp`。
 
 ## 现成的 MCP server 去哪里找
 
@@ -608,7 +608,7 @@ await server.connect(transport);
 - 让用户手动附加一份设计 token 清单，用 `resource`
 - 让用户手动触发“生成 PR 描述”这类固定流程，用 `prompt`
 
-但第一版真不用全做。
+但第一版不用全做。
 
 ## 写完了如何生成，如何接入客户端
 

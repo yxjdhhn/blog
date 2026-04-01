@@ -19,10 +19,10 @@ const readingTime = estimateReadingTime(post.body || '');
 ---
 
 <BaseLayout title={`${post.data.title} | ${t(lang, 'site.title')}`} description={post.data.description} image={post.data.heroImage}>
-  <article class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-    <div class="flex gap-10 justify-center">
+  <article class="max-w-6xl xl:max-w-7xl 2xl:max-w-[88rem] mx-auto px-4 sm:px-6 py-8">
+    <div class="flex justify-center xl:gap-16 2xl:gap-24">
       {headings.length > 0 && (
-        <aside class="hidden xl:block w-56 shrink-0">
+        <aside class="hidden xl:block w-52 shrink-0">
           <div class="sticky top-24">
             <TableOfContents headings={headings} />
           </div>

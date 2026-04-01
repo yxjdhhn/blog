@@ -6,6 +6,8 @@ import { getLangFromUrl, t, getLocalizedUrl } from '@/i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const currentPath = Astro.url.pathname;
+const serviceHubUrl = 'https://www.yyykit.com/';
+const moreSitesLabel = t(lang, 'nav.moreSites');
 
 const navItems = [
   { label: t(lang, 'nav.home'), href: getLocalizedUrl(lang, '/') },
@@ -51,6 +53,32 @@ function isActive(href: string): boolean {
 
       <!-- Right side controls -->
       <div class="flex items-center gap-1">
+        <a
+          href={serviceHubUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group relative flex h-10 w-10 items-center justify-center rounded-xl border border-transparent bg-bg-subtle/80 text-secondary transition-all duration-200 hover:border-primary-border hover:bg-primary-bg hover:text-primary"
+          aria-label={moreSitesLabel}
+        >
+          <span class="absolute inset-0 rounded-xl bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.35),transparent_60%)] opacity-70 transition-opacity duration-200 group-hover:opacity-100" aria-hidden="true"></span>
+          <svg class="relative h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="6" cy="6" r="1.7" />
+            <circle cx="12" cy="6" r="1.7" />
+            <circle cx="18" cy="6" r="1.7" />
+            <circle cx="6" cy="12" r="1.7" />
+            <circle cx="12" cy="12" r="1.7" />
+            <circle cx="18" cy="12" r="1.7" />
+            <circle cx="6" cy="18" r="1.7" />
+            <circle cx="12" cy="18" r="1.7" />
+            <circle cx="18" cy="18" r="1.7" />
+          </svg>
+          <span
+            class="pointer-events-none absolute left-1/2 top-[calc(100%+0.6rem)] z-20 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-lg border border-border-strong bg-bg-card px-2.5 py-1.5 text-xs font-medium text-heading opacity-0 shadow-lg transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
+            aria-hidden="true"
+          >
+            {moreSitesLabel}
+          </span>
+        </a>
         <Search />
         <LanguagePicker />
         <ThemeToggle />

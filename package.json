@@ -5,7 +5,7 @@
   "scripts": {
     "prepare": "node scripts/setup-hooks.mjs",
     "dev": "astro dev",
-    "build": "astro build && npx pagefind --site dist",
+    "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "posts:sync": "node scripts/sync-posts.mjs",

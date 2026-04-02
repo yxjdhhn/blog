@@ -5,16 +5,16 @@ const lang = getLangFromUrl(Astro.url);
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="border-t border-border mt-16">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+<footer class="mt-20 border-t border-border/80">
+  <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
       <p class="text-sm text-muted">
         &copy; {currentYear} {t(lang, 'site.title')}. {t(lang, 'footer.copyright')}.
       </p>
       <div class="flex items-center gap-4">
         <a
           href="/rss.xml"
-          class="text-muted hover:text-orange-500 transition-colors"
+          class="control-button control-button--icon"
           aria-label="RSS Feed"
         >
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -25,7 +25,7 @@ const currentYear = new Date().getFullYear();
           href="https://github.com/yxjdhhn"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-muted hover:text-heading transition-colors"
+          class="control-button control-button--icon"
           aria-label="GitHub"
         >
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

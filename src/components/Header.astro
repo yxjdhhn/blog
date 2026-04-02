@@ -23,27 +23,30 @@ function isActive(href: string): boolean {
 }
 ---
 
-<header class="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6">
-    <div class="flex items-center justify-between h-16">
-      <!-- Logo -->
+<header class="site-header sticky top-0 z-50 border-b border-border/80 bg-bg/72 backdrop-blur-xl">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="site-header__bar">
       <a
         href={getLocalizedUrl(lang, '/')}
-        class="text-xl font-bold text-heading hover:text-primary transition-colors"
+        class="site-header__brand group flex min-w-0 shrink flex-col leading-none"
       >
-        {t(lang, 'site.title')}
+        <span class="site-header__brand-mark text-[0.62rem] uppercase tracking-[0.32em] text-muted transition-colors group-hover:text-primary">
+          Personal Archive
+        </span>
+        <span class="site-header__brand-title mt-2 font-[var(--font-serif)] text-[1.45rem] tracking-[-0.04em] text-heading transition-colors group-hover:text-primary sm:text-[1.55rem]">
+          {t(lang, 'site.title')}
+        </span>
       </a>
 
-      <!-- Desktop Navigation -->
-      <nav class="hidden md:flex items-center gap-1">
+      <nav class="site-header__desktop-nav hidden items-center gap-1 rounded-full border border-border/80 bg-bg-card/70 p-1 shadow-[0_18px_40px_color-mix(in_srgb,var(--color-bg)_68%,transparent)] backdrop-blur-xl md:flex">
         {navItems.map(({ label, href }) => (
           <a
             href={href}
             class:list={[
-              'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+              'rounded-full px-4 py-2 text-sm font-medium transition-colors',
               isActive(href)
-                ? 'text-primary bg-primary-bg'
-                : 'text-secondary hover:text-heading hover:bg-bg-subtle',
+                ? 'bg-primary-bg text-heading shadow-[inset_0_1px_0_color-mix(in_srgb,white_18%,transparent)]'
+                : 'text-secondary hover:bg-bg-subtle hover:text-heading',
             ]}
           >
             {label}
@@ -51,16 +54,14 @@ function isActive(href: string): boolean {
         ))}
       </nav>
 
-      <!-- Right side controls -->
-      <div class="flex items-center gap-1">
+      <div class="site-header__controls">
         <a
           href={serviceHubUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="group relative flex h-10 w-10 items-center justify-center rounded-xl border border-transparent bg-bg-subtle/80 text-secondary transition-all duration-200 hover:border-primary-border hover:bg-primary-bg hover:text-primary"
+          class="site-header__hub control-button control-button--icon group relative"
           aria-label={moreSitesLabel}
         >
-          <span class="absolute inset-0 rounded-xl bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.35),transparent_60%)] opacity-70 transition-opacity duration-200 group-hover:opacity-100" aria-hidden="true"></span>
           <svg class="relative h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="6" cy="6" r="1.7" />
             <circle cx="12" cy="6" r="1.7" />
@@ -73,7 +74,7 @@ function isActive(href: string): boolean {
             <circle cx="18" cy="18" r="1.7" />
           </svg>
           <span
-            class="pointer-events-none absolute left-1/2 top-[calc(100%+0.6rem)] z-20 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-lg border border-border-strong bg-bg-card px-2.5 py-1.5 text-xs font-medium text-heading opacity-0 shadow-lg transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
+            class="pointer-events-none absolute left-1/2 top-[calc(100%+0.6rem)] z-20 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-full border border-border-strong bg-bg-card px-2.5 py-1.5 text-xs font-medium text-heading opacity-0 shadow-lg transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
             aria-hidden="true"
           >
             {moreSitesLabel}
@@ -83,12 +84,13 @@ function isActive(href: string): boolean {
         <LanguagePicker />
         <ThemeToggle />
 
-        <!-- Mobile menu button -->
         <button
           id="mobile-menu-btn"
           type="button"
-          class="md:hidden p-2 rounded-lg text-secondary hover:bg-bg-subtle"
+          class="control-button control-button--icon md:hidden"
           aria-label="Toggle menu"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path id="menu-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -98,16 +100,15 @@ function isActive(href: string): boolean {
       </div>
     </div>
 
-    <!-- Mobile Navigation -->
-    <nav id="mobile-menu" class="hidden md:hidden pb-4">
+    <nav id="mobile-menu" class="hidden space-y-2 pb-4 md:hidden" aria-hidden="true">
       {navItems.map(({ label, href }) => (
         <a
           href={href}
           class:list={[
-            'block px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+            'block rounded-2xl border border-border/80 px-4 py-3 text-sm font-medium transition-colors',
             isActive(href)
-              ? 'text-primary bg-primary-bg'
-              : 'text-secondary hover:text-heading hover:bg-bg-subtle',
+              ? 'bg-primary-bg text-heading'
+              : 'bg-bg-card/60 text-secondary hover:bg-bg-subtle hover:text-heading',
           ]}
         >
           {label}
@@ -125,13 +126,78 @@ function isActive(href: string): boolean {
     const closeIcon = document.getElementById('menu-close');
     if (!btn || !menu || !openIcon || !closeIcon) return;
 
+    if (btn.dataset.mobileMenuBound === 'true') return;
+    btn.dataset.mobileMenuBound = 'true';
+
     btn.addEventListener('click', () => {
-      menu.classList.toggle('hidden');
-      openIcon.classList.toggle('hidden');
-      closeIcon.classList.toggle('hidden');
+      const isHidden = menu.classList.contains('hidden');
+      menu.classList.toggle('hidden', !isHidden);
+      menu.setAttribute('aria-hidden', String(!isHidden));
+      btn.setAttribute('aria-expanded', String(isHidden));
+      openIcon.classList.toggle('hidden', isHidden);
+      closeIcon.classList.toggle('hidden', !isHidden);
     });
   }
 
   setupMobileMenu();
   document.addEventListener('astro:after-swap', setupMobileMenu);
 </script>
+
+<style>
+  .site-header__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 5rem;
+    padding-block: 0.75rem;
+  }
+
+  .site-header__controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 720px) {
+    .site-header__bar {
+      gap: 0.75rem;
+      min-height: auto;
+      padding-block: 0.65rem;
+    }
+
+    .site-header__brand {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .site-header__brand-mark {
+      font-size: 0.57rem;
+      letter-spacing: 0.26em;
+    }
+
+    .site-header__brand-title {
+      margin-top: 0.45rem;
+      font-size: 1.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .site-header__controls {
+      gap: 0.38rem;
+    }
+
+    .site-header__hub {
+      display: none;
+    }
+  }
+
+  @media (min-width: 768px) {
+    #mobile-menu-btn,
+    #mobile-menu {
+      display: none !important;
+    }
+  }
+</style>

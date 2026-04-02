@@ -12,17 +12,19 @@ interface Props {
 const { groups, lang } = Astro.props;
 ---
 
-<div class="space-y-10">
+<div class="archive-list">
   {groups.map((group) => (
-    <section>
-      <div class="mb-4 flex items-center gap-4">
-        <h2 class="shrink-0 text-lg font-semibold tracking-tight text-heading sm:text-xl">
+    <section class="archive-group">
+      <div class="archive-group__meta">
+        <p class="archive-group__count">
+          {lang === 'zh' ? `${group.posts.length} 篇` : `${group.posts.length} posts`}
+        </p>
+        <h2 class="archive-group__title">
           {formatMonthYear(group.date, lang)}
         </h2>
-        <div class="h-px flex-1 bg-border" />
       </div>
 
-      <div class="space-y-4">
+      <div class="archive-group__items">
         {group.posts.map((post) => (
           <CompactPostListItem post={post} />
         ))}
@@ -30,3 +32,59 @@ const { groups, lang } = Astro.props;
     </section>
   ))}
 </div>
+
+<style>
+  .archive-list {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .archive-group {
+    display: grid;
+    gap: 1.2rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
+  }
+
+  .archive-group__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .archive-group__count {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .archive-group__title {
+    margin: 0;
+    font-size: clamp(1.2rem, 2vw, 1.45rem);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--color-heading);
+  }
+
+  .archive-group__items {
+    display: grid;
+    gap: 1rem;
+  }
+
+  @media (min-width: 960px) {
+    .archive-group {
+      grid-template-columns: 12rem minmax(0, 1fr);
+      gap: 1.6rem;
+      align-items: start;
+    }
+
+    .archive-group__meta {
+      position: sticky;
+      top: 5.8rem;
+    }
+  }
+</style>

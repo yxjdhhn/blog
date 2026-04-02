@@ -23,39 +23,25 @@ const heroImageHeight = heroImage && 'height' in heroImage ? heroImage.height : 
 
 <article
   class:list={[
-    'group overflow-hidden rounded-xl border border-border bg-bg-card transition-colors duration-300 hover:border-primary-border hover:bg-bg-secondary/40',
-    hasHeroImage && 'grid grid-cols-[112px_minmax(0,1fr)] items-stretch gap-4 p-4 sm:grid-cols-[136px_minmax(0,1fr)] sm:gap-5',
-    !hasHeroImage && 'p-4 sm:p-5',
+    'group relative isolate overflow-hidden rounded-[1.35rem] border border-border/90 bg-bg-card/72 p-3.5 shadow-[0_14px_34px_color-mix(in_srgb,var(--color-bg)_48%,transparent)] transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-border sm:p-4',
+    hasHeroImage && 'grid gap-4 lg:grid-cols-[minmax(0,1fr)_8.75rem] lg:items-center',
   ]}
 >
-  {post.data.heroImage && (
-    <a href={postUrl} class="block h-full min-h-24 self-stretch overflow-hidden rounded-lg bg-bg-subtle sm:min-h-28">
-      <img
-        src={heroImageSrc}
-        alt={post.data.title}
-        width={heroImageWidth}
-        height={heroImageHeight}
-        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-        loading="lazy"
-        sizes="(min-width: 640px) 136px, 112px"
-        decoding="async"
-      />
-    </a>
-  )}
+  <span class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,color-mix(in_srgb,var(--color-primary)_8%,transparent),transparent_34%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"></span>
 
-  <div class="min-w-0">
-    <div class="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+  <div class="relative min-w-0">
+    <div class="mb-2.5 flex flex-wrap items-center gap-x-2 gap-y-2 text-[0.75rem] text-muted">
       <time datetime={post.data.pubDate.toISOString()}>
         {formatDateShort(post.data.pubDate, lang)}
       </time>
-      <span>&middot;</span>
+      <span class="opacity-50">&middot;</span>
       <span>{readingTime} {t(lang, 'post.minRead')}</span>
       {post.data.category && (
         <>
-          <span>&middot;</span>
+          <span class="opacity-50">&middot;</span>
           <a
             href={getLocalizedUrl(lang, `/categories/${post.data.category}/`)}
-            class="text-primary hover:underline"
+            class="inline-flex items-center rounded-full border border-border px-2 py-0.5 text-[0.68rem] font-medium text-secondary hover:border-primary-border hover:text-heading"
           >
             {post.data.category}
           </a>
@@ -63,22 +49,22 @@ const heroImageHeight = heroImage && 'height' in heroImage ? heroImage.height : 
       )}
     </div>
 
-    <h2 class="mb-2 text-base font-semibold leading-snug text-heading transition-colors group-hover:text-primary sm:text-lg">
+    <h2 class="max-w-3xl text-[1.12rem] font-semibold leading-[1.22] tracking-[-0.02em] text-heading transition-colors group-hover:text-primary sm:text-[1.26rem]">
       <a href={postUrl}>
         {post.data.title}
       </a>
     </h2>
 
-    <p class="mb-3 text-sm leading-6 text-secondary line-clamp-2 sm:line-clamp-3">
+    <p class="mt-2 max-w-2xl text-sm leading-6 text-secondary line-clamp-2 sm:text-[0.94rem]">
       {post.data.description}
     </p>
 
     {post.data.tags.length > 0 && (
-      <div class="flex flex-wrap gap-1.5">
-        {post.data.tags.map((tag) => (
+      <div class="mt-3 flex flex-wrap gap-1.5">
+        {post.data.tags.slice(0, 4).map((tag) => (
           <a
             href={getLocalizedUrl(lang, `/tags/${tag}/`)}
-            class="rounded-full bg-bg-subtle px-2 py-0.5 text-[11px] text-secondary transition-colors hover:bg-primary-bg-hover hover:text-primary-hover"
+            class="rounded-full border border-border/85 bg-bg-card/70 px-2 py-0.5 text-[0.68rem] text-secondary transition-colors hover:border-primary-border hover:text-heading"
           >
             #{tag}
           </a>
@@ -86,4 +72,19 @@ const heroImageHeight = heroImage && 'height' in heroImage ? heroImage.height : 
       </div>
     )}
   </div>
+
+  {post.data.heroImage && (
+    <a href={postUrl} class="relative block overflow-hidden rounded-[0.95rem] border border-border/70 bg-bg-subtle/55 lg:min-h-[6.5rem]">
+      <img
+        src={heroImageSrc}
+        alt={post.data.title}
+        width={heroImageWidth}
+        height={heroImageHeight}
+        class="h-full w-full object-cover opacity-88 saturate-[0.82] transition-all duration-500 group-hover:scale-[1.02] group-hover:opacity-96 group-hover:saturate-100"
+        loading="lazy"
+        sizes="(min-width: 1024px) 140px, 100vw"
+        decoding="async"
+      />
+    </a>
+  )}
 </article>

@@ -1,21 +1,220 @@
 ---
-interface Props {
-  title: string;
-  description?: string;
+interface LinkItem {
+  label: string;
+  href: string;
 }
 
-const { title, description } = Astro.props;
+interface Props {
+  eyebrow: string;
+  title: string;
+  titleLines?: string[];
+  description?: string;
+  archiveStamp?: string;
+  links: LinkItem[];
+}
+
+const {
+  eyebrow,
+  title,
+  titleLines,
+  description,
+  archiveStamp,
+  links,
+} = Astro.props;
+
+const resolvedTitleLines =
+  Array.isArray(titleLines) && titleLines.length > 0 ? titleLines : [title];
 ---
 
-<div class="mb-10 sm:mb-12">
-  <div class="max-w-2xl">
-    <h1 class="text-2xl font-semibold tracking-tight text-heading sm:text-3xl">
-      {title}
-    </h1>
-    {description && (
-      <p class="mt-3 text-sm leading-7 text-secondary sm:text-base">
-        {description}
-      </p>
-    )}
+<section class="home-hero">
+  <div class="home-hero__meta">
+    <p class="home-hero__eyebrow">{eyebrow}</p>
+    {archiveStamp && <p class="home-hero__stamp">{archiveStamp}</p>}
   </div>
-</div>
+
+  <div class="home-hero__body">
+    <h1 class="home-hero__title">
+      {resolvedTitleLines.map((line) => (
+        <span class="home-hero__title-line">{line}</span>
+      ))}
+    </h1>
+
+    <div class="home-hero__aside">
+      {description && (
+        <p class="home-hero__description">
+          {description}
+        </p>
+      )}
+
+      {links.length > 0 && (
+        <div class="home-hero__links">
+          {links.map((link) => (
+            <a href={link.href} class="home-hero__link">
+              {link.label}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .home-hero {
+    position: relative;
+    display: grid;
+    gap: 0.9rem;
+    margin-bottom: 2.1rem;
+    padding: clamp(1rem, 2vw, 1.45rem);
+    border: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
+    border-radius: 1.45rem;
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--color-bg-card) 92%, transparent), color-mix(in srgb, var(--color-bg-secondary) 70%, transparent));
+    box-shadow:
+      0 14px 36px color-mix(in srgb, var(--color-bg) 34%, transparent),
+      inset 0 1px 0 color-mix(in srgb, white 12%, transparent);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .home-hero::before,
+  .home-hero::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    border-radius: 999px;
+  }
+
+  .home-hero::before {
+    width: 10rem;
+    height: 10rem;
+    right: -4rem;
+    top: -5rem;
+    background: radial-gradient(circle, color-mix(in srgb, var(--color-primary) 14%, transparent) 0, transparent 74%);
+    opacity: 0.75;
+  }
+
+  .home-hero::after {
+    width: 8rem;
+    height: 8rem;
+    left: -3.5rem;
+    bottom: -5.5rem;
+    background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 10%, transparent) 0, transparent 72%);
+  }
+
+  .home-hero__meta,
+  .home-hero__body,
+  .home-hero__title,
+  .home-hero__description,
+  .home-hero__links {
+    position: relative;
+    z-index: 1;
+  }
+
+  .home-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem 0.9rem;
+  }
+
+  .home-hero__eyebrow,
+  .home-hero__stamp {
+    margin: 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .home-hero__stamp {
+    letter-spacing: 0.1em;
+  }
+
+  .home-hero__body {
+    display: grid;
+    gap: 1rem 2rem;
+    align-items: end;
+  }
+
+  .home-hero__title {
+    margin: 0;
+    max-width: 9.5em;
+    font-family: var(--font-serif);
+    font-size: clamp(2.2rem, 4.15vw, 3.28rem);
+    line-height: 1;
+    letter-spacing: -0.045em;
+    color: var(--color-heading);
+  }
+
+  .home-hero__title-line {
+    display: block;
+  }
+
+  .home-hero__title-line + .home-hero__title-line {
+    margin-top: 0.12em;
+  }
+
+  .home-hero__aside {
+    display: grid;
+    gap: 0.9rem;
+    max-width: 26rem;
+  }
+
+  .home-hero__description {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--color-secondary);
+  }
+
+  .home-hero__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .home-hero__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--color-heading);
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .home-hero__link::after {
+    content: '↗';
+    color: var(--color-primary);
+    transition: transform 180ms ease;
+  }
+
+  .home-hero__link:hover::after {
+    transform: translate(2px, -2px);
+  }
+
+  @media (min-width: 900px) {
+    .home-hero__body {
+      grid-template-columns: minmax(0, 1.15fr) minmax(15rem, 0.62fr);
+    }
+  }
+
+  @media (max-width: 720px) {
+    .home-hero {
+      gap: 0.75rem;
+      margin-bottom: 1.7rem;
+      border-radius: 1.2rem;
+      padding: 0.95rem 0.95rem 1.05rem;
+    }
+
+    .home-hero__title {
+      max-width: none;
+      font-size: clamp(1.78rem, 7.4vw, 2.3rem);
+    }
+
+    .home-hero__aside {
+      gap: 0.75rem;
+    }
+  }
+</style>

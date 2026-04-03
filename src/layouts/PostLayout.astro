@@ -94,16 +94,83 @@ const readingTime = estimateReadingTime(post.body || '');
         <div class="prose max-w-none" data-pagefind-body>
           <slot />
         </div>
+
+        <button
+          type="button"
+          class="control-button fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 translate-y-4 pointer-events-none opacity-0 transition-all duration-200 sm:right-6 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))]"
+          data-back-to-top
+          aria-hidden="true"
+          tabIndex={-1}
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 19V5" />
+            <path d="m6.75 10.25 5.25-5.25 5.25 5.25" />
+          </svg>
+        </button>
+
         <script>
-          document.querySelectorAll('.collapsible-code-details').forEach((details) => {
-            const summary = details.querySelector('.collapsible-code-summary');
-            if (!summary) return;
-            const expand = summary.getAttribute('data-expand') || '展开代码';
-            const collapse = summary.getAttribute('data-collapse') || '折叠代码';
-            const update = () => { summary.textContent = details.open ? collapse : expand; };
-            details.addEventListener('toggle', update);
-            update();
-          });
+          const initCollapsibleCode = () => {
+            document.querySelectorAll('.collapsible-code-details').forEach((details) => {
+              const summary = details.querySelector('.collapsible-code-summary');
+              if (!summary) return;
+              const expand = summary.getAttribute('data-expand') || '展开代码';
+              const collapse = summary.getAttribute('data-collapse') || '折叠代码';
+              const update = () => { summary.textContent = details.open ? collapse : expand; };
+              details.addEventListener('toggle', update);
+              update();
+            });
+          };
+
+          const initBackToTop = () => {
+            const button = document.querySelector('[data-back-to-top]');
+            const articleContent = document.querySelector('[data-pagefind-body]');
+            if (!(button instanceof HTMLButtonElement) || !(articleContent instanceof HTMLElement)) return;
+
+            const setVisible = (visible) => {
+              button.classList.toggle('translate-y-0', visible);
+              button.classList.toggle('opacity-100', visible);
+              button.classList.toggle('pointer-events-auto', visible);
+              button.classList.toggle('translate-y-4', !visible);
+              button.classList.toggle('opacity-0', !visible);
+              button.classList.toggle('pointer-events-none', !visible);
+              button.setAttribute('aria-hidden', String(!visible));
+              button.tabIndex = visible ? 0 : -1;
+            };
+
+            const isLongArticle = () => articleContent.scrollHeight > window.innerHeight * 1.5;
+            const shouldShow = () => isLongArticle() && window.scrollY > Math.max(360, window.innerHeight * 0.6);
+
+            let ticking = false;
+            const updateVisibility = () => {
+              setVisible(shouldShow());
+              ticking = false;
+            };
+
+            const requestUpdate = () => {
+              if (ticking) return;
+              ticking = true;
+              window.requestAnimationFrame(updateVisibility);
+            };
+
+            button.addEventListener('click', () => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            window.addEventListener('scroll', requestUpdate, { passive: true });
+            window.addEventListener('resize', requestUpdate);
+            requestUpdate();
+          };
+
+          const initPostPageEnhancements = () => {
+            initCollapsibleCode();
+            initBackToTop();
+          };
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initPostPageEnhancements, { once: true });
+          } else {
+            initPostPageEnhancements();
+          }
         </script>
 
         <!-- Comments -->

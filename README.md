@@ -170,12 +170,10 @@ npm run posts:sync:staged
 文本翻译支持：
 
 - `deepseek-compatible`
-- `openai-compatible`
 
 图片生成支持：
 
 - `siliconflow`
-- `google-gemini`
 - `procedural-local`
 
 常用变量如下：
@@ -186,13 +184,10 @@ npm run posts:sync:staged
 | `AI_TEXT_API_BASE_URL` | 文本接口地址 |
 | `AI_TEXT_API_KEY` | 文本接口密钥 |
 | `AI_TEXT_MODEL` | 文本模型名 |
-| `AI_IMAGE_PROVIDER` | 图片 provider；不填时会自动推断 |
+| `AI_IMAGE_PROVIDER` | 图片 provider，默认 `siliconflow`；设为 `procedural-local` 可强制走本地 SVG |
 | `AI_IMAGE_API_BASE_URL` | 图片接口地址 |
-| `AI_IMAGE_API_KEY` | 通用图片接口密钥 |
 | `AI_IMAGE_MODEL` | 图片模型名 |
 | `SILICONFLOW_API_KEY` | SiliconFlow 专用密钥 |
-| `SILICONFLOW_API_BASE_URL` | SiliconFlow 专用地址 |
-| `GOOGLE_API_KEY` | Gemini 图片接口密钥 |
 | `SKIP_BLOG_AUTOGEN` | 设为 `1` 时跳过自动翻译和自动配图 |
 
 示例：DeepSeek 文本翻译 + SiliconFlow 出图
@@ -212,6 +207,7 @@ SKIP_BLOG_AUTOGEN=0
 ```
 
 如果没有可用的图片密钥，图片链路会自动回退到本地生成的 SVG 封面。
+如果你想完全离线生成封面，可显式设置 `AI_IMAGE_PROVIDER=procedural-local`。
 
 ### 重试与跳过
 

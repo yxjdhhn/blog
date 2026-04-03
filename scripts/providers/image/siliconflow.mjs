@@ -8,11 +8,9 @@ const RETRYABLE_STATUS_CODES = new Set([408, 409, 425, 429, 500, 502, 503, 504])
 const RETRY_DELAYS_MS = [1_000, 3_000, 8_000];
 
 export function createSiliconFlowImageProvider(env, options = {}) {
-  const apiKey = env.AI_IMAGE_API_KEY || env.SILICONFLOW_API_KEY || null;
-  const apiBaseUrl = normalizeApiBaseUrl(
-    env.AI_IMAGE_API_BASE_URL || env.SILICONFLOW_API_BASE_URL || env.SILICONFLOW_BASE_URL || DEFAULT_API_BASE_URL
-  );
-  const model = env.AI_IMAGE_MODEL || env.SILICONFLOW_IMAGE_MODEL || DEFAULT_MODEL;
+  const apiKey = env.SILICONFLOW_API_KEY || null;
+  const apiBaseUrl = normalizeApiBaseUrl(env.AI_IMAGE_API_BASE_URL || DEFAULT_API_BASE_URL);
+  const model = env.AI_IMAGE_MODEL || DEFAULT_MODEL;
   const fallbackProvider = options.fallbackProvider;
 
   return {

@@ -1,6 +1,6 @@
 ---
-title: 这个博客是怎么自动生成英文文档和封面的
-description: 拆一下这个 Astro 博客里的自动化发布链路，看看英文稿和文章封面是怎么在提交前被补出来的。
+title: 这个网站是怎么自动生成英文文档和封面的
+description: 拆一下这个网站里的自动化发布链路，看看英文稿和文章封面是怎么在提交前被补出来的。
 pubDate: '2026-04-02'
 tags:
   - Astro
@@ -10,13 +10,26 @@ tags:
   - 工程实践
 category: 技术
 ---
-我挺喜欢这个项目的一点，是它没把“AI 自动化”做成那种很虚的概念展示，而是老老实实塞进了发文流程里。
 
-你写中文稿，`git commit` 之前它会先跑一遍同步脚本。能翻的就补英文稿，能出的就补封面；接口挂了、网络不通、模型超时，也不会把你整条提交流程卡死，而是留下一个 `pending` 结果，后面再补。
+
+[Github项目指路](https://github.com/yxjdhhn/blog)
+
+我挺喜欢这个项目的一点，是它把“AI 自动化”塞进了发文流程里。
+
+写完中文稿，`git commit` 之前它可以先跑一遍同步脚本。能翻的就补英文稿，能出的就补封面；接口挂了、网络不通、模型超时，也不会把你整条提交流程卡死，而是留下一个 `pending` 结果，后面再补。
 
 这篇文章就顺着代码把这条链路拆开说说。
 
-## 入口其实只有一个
+<div class="article-callout">
+  <p class="article-kicker">先看结论</p>
+  <ul>
+    <li><strong>入口在 Git hook</strong>，不是在页面层，也不是在构建阶段。</li>
+    <li><strong>翻译和封面都按“可失败但不断流程”来设计</strong>，所以会有 <code>pending</code>、checkpoint 和 fallback。</li>
+    <li><strong>AI 生成物默认要人工再看一眼</strong>，不会悄悄直接塞进仓库。</li>
+  </ul>
+</div>
+
+## 入口到底在哪里
 
 整个自动化的起点不在页面层，也不在 Astro 的构建阶段，而是在 Git hook。
 
@@ -33,7 +46,9 @@ category: 技术
 }
 ```
 
-真正会在提交前触发的是 `posts:sync:staged`。它只扫本次暂存的中文文章，不会一上来把整个 `src/content/blog/zh/` 目录都翻一遍。这点很实用，尤其是你一次只改一两篇文章的时候，速度和心理压力都轻很多。
+真正会在提交前触发的是 `posts:sync:staged`。
+
+它只扫本次暂存的中文文章，不会一上来把整个 `src/content/blog/zh/` 目录都翻一遍。这点很实用，尤其是你一次只改一两篇文章的时候，速度和心理压力都轻很多。
 
 `scripts/sync-posts.mjs` 本身很薄，主要做三件事：
 
@@ -41,9 +56,9 @@ category: 技术
 2. 找出要处理的中文稿
 3. 对每篇中文稿调用 `syncChinesePost`
 
-也就是说，真正的脑子都在 `scripts/lib/autogen.mjs` 里。
+也就是说，真正的核心都在 `scripts/lib/autogen.mjs` 里。
 
-## 它先判断这篇英文稿到底归不归自己管
+## 它先判断英文稿归不归自己管
 
 这一步我觉得写得挺工程化。
 
@@ -59,11 +74,13 @@ category: 技术
 
 这里有个细节值得注意：`pubDate`、`updatedDate`、`heroImage` 都不在哈希里。换句话说，改发布时间或者补封面，不会触发整篇英文重翻。这是个很务实的取舍。
 
-英文稿如果同时带着 `generatedFrom: zh` 和 `sourceHash`，脚本就把它当成自己维护的文件；如果这些字段都没有，那就按“历史手写稿”处理，正文不会碰，只继续帮你维护共享封面。
+英文稿如果同时带着 `generatedFrom: zh` 和 `sourceHash`，脚本就把它当成自己维护的文件。
+
+如果这些字段都没有，那就按“历史手写稿”处理，正文不会碰，只继续帮你维护共享封面。
 
 这就解决了一个很真实的问题：很多博客不是从第一天开始就全自动的。你总会有一些老英文稿是手写的，或者是以前别的流程产出来的。这个仓库没有强行统一历史，而是给新老内容留了分界线。
 
-## 英文文档不是整篇直译，而是分两步
+## 英文稿为什么要拆成两步
 
 英文稿生成分成 metadata 和正文两条线。
 
@@ -84,11 +101,12 @@ Preserve product names and technical terms where appropriate.
 - 单块总字符数不超过 `2400`
 - 单块中文字符数不超过 `1600`
 
-这样做有两个好处。
+这样做有两个直接好处：
 
-第一，代码块和表格不容易被切烂。第二，长文中途如果失败了，不用从头再来。
+- 代码块和表格不容易被切烂
+- 长文中途如果失败了，不用从头再来
 
-## 断点续传这块，才是它最像工程代码的地方
+## 为什么断点续传这块最像工程代码
 
 翻译过程会把进度写进 `.cache/blog-autogen/translation/<slug>.json`。
 
@@ -107,7 +125,7 @@ Preserve product names and technical terms where appropriate.
 The AI translation step was unavailable during the last sync attempt.
 ```
 
-然后把原始中文正文保留下来。这样做有点朴素，但挺对。至少仓库里始终有个对应文件，前端路由、内容集合、后续重试都还能继续工作，不会因为一次 AI 请求挂了就整个流程断掉。
+然后把原始中文正文保留下来。这样做有点朴素，但还算稳。至少仓库里始终有个对应文件，前端路由、内容集合、后续重试都还能继续工作，不会因为一次 AI 请求挂了就整个流程断掉。
 
 后面你可以用这两个命令补：
 
@@ -116,14 +134,11 @@ npm run posts:retry -- <slug>
 npm run posts:retry -- --pending
 ```
 
-## 文本 provider 其实很克制
+## 文本 provider 为什么写得很克制
 
-这个仓库的文本 provider 只有两种：
+现在这个仓库的文本生成是一条线：默认直接走 `deepseek-compatible`。
 
-- `deepseek-compatible`
-- `openai-compatible`
-
-`deepseek-compatible` 本质上只是对 `openai-compatible` 做了一层默认值包装。真正的请求协议就是传统的 `/chat/completions`。
+它没有再保留“给别家 AI API 顺手兼容一下”的通用 provider 包装，实际请求协议就是固定的 `/chat/completions`。
 
 我比较喜欢它 prompt 写得克制这一点。比如正文翻译只强调几件事：
 
@@ -131,9 +146,53 @@ npm run posts:retry -- --pending
 - 保留链接、表格、命令、代码块、文件名、API 名
 - 只翻自然语言部分
 
-这种 prompt 不算花哨，但很适合文档翻译。博客文章最怕的不是翻得不够“优雅”，而是命令被改了、链接结构被破坏了、代码注释和正文缠在一起。这个实现明显是冲着“少出事故”去的。
+这种 prompt 不算花哨，但很适合文档翻译。博客文章最怕的不是翻得不够“优雅”，而是命令被改了、链接结构被破坏了、代码注释和正文缠在一起。这个实现是冲着“少出事故”去的。
 
-## 封面生成比翻译还多一层保险
+## 这套自动化要先配哪些变量
+
+这部分其实没有看起来那么复杂。
+
+脚本启动时会先读 `.env` 和 `.env.local`。如果你平时就是本地开发、偶尔改配置，我更建议直接把东西写进 `.env.local`，比较省心，也不容易把 key 一起带进仓库。
+
+按现在这版实现，最常见的一套配置大概就是这样：
+
+```env
+AI_TEXT_PROVIDER=deepseek-compatible
+AI_TEXT_API_BASE_URL=https://api.deepseek.com
+AI_TEXT_API_KEY=your_text_key
+AI_TEXT_MODEL=deepseek-chat
+
+AI_IMAGE_PROVIDER=siliconflow
+AI_IMAGE_API_BASE_URL=https://api.siliconflow.cn/v1
+AI_IMAGE_MODEL=Qwen/Qwen-Image
+SILICONFLOW_API_KEY=your_image_key
+
+SKIP_BLOG_AUTOGEN=0
+```
+
+我自己的感觉是，这里真正需要你关心的其实只有两件事：
+
+1. 文本翻译有没有 key
+2. 图片生成想走在线模型，还是干脆走本地 SVG
+
+剩下那些变量，大多只是把地址和模型名写清楚，别让脚本猜。
+
+## 文本 provider 要怎么配
+
+文本这边现在很直接。
+
+`AI_TEXT_PROVIDER` 只认 `deepseek-compatible`。你不写，它默认也是这个；写成别的值，目前的脚本会直接报错。
+
+现在文本侧就四个核心变量：
+
+- `AI_TEXT_PROVIDER`
+- `AI_TEXT_API_BASE_URL`
+- `AI_TEXT_API_KEY`
+- `AI_TEXT_MODEL`
+
+如果你只是照着默认方案走，基本不用折腾。最容易漏的其实只有 `AI_TEXT_API_KEY`。这个没配，翻译链路就会直接落到 `pending` 草稿。
+
+## 为什么封面链路还多一层保险
 
 封面这条链路也放在 `syncChinesePost` 里，调用的是 `ensureSharedImage`。
 
@@ -143,18 +202,29 @@ npm run posts:retry -- --pending
 
 ## 图片 provider 怎么选
 
-图片 provider 的选择逻辑在 `scripts/providers/index.mjs`，优先级大概是这样：
+1. 默认走 `siliconflow`
+2. 如果显式写了 `AI_IMAGE_PROVIDER=procedural-local`，就强制走本地 SVG
 
-1. 如果显式写了 `AI_IMAGE_PROVIDER`，就按它来
-2. 如果环境变量里能看出是 SiliconFlow，就走 `siliconflow`
-3. 如果有通用图片 key 或 `GOOGLE_API_KEY`，就走 `google-gemini`
-4. 都没有，就退回 `procedural-local`
+也就是说，线上出图是一条主链路，本地仍有一条纯程序生成的兜底链路。即使没有图片 key，这套流程也不会死，最差情况照样能给你产一张本地 SVG 封面。
 
-也就是说，本地没有任何图片模型配置，这套流程也不会死。最差情况，它照样给你产一张程序生成的 SVG 封面。
+在线模型，怎么配：
 
-这个兜底思路我很认同。博客发文不是在线推理平台，重点不是“每次都要最强模型出最炫图”，而是你别因为缺一个 key，连文章列表都挂个空白缩略图。
+- `AI_IMAGE_PROVIDER=siliconflow`
+- `AI_IMAGE_API_BASE_URL`
+- `AI_IMAGE_MODEL`
+- `SILICONFLOW_API_KEY`
 
-## SiliconFlow 和 Gemini，思路还不太一样
+如果只是临时离线写文章，不想因为少一个 key 就把流程卡住，那就更直接：
+
+```env
+AI_IMAGE_PROVIDER=procedural-local
+```
+
+这样封面会直接走本地 SVG 生成，不请求外部接口。
+
+这套设计我挺喜欢的地方在于，它没有把“本地 fallback”藏成一个出错后的意外结果，而是允许你明确说一句：这次我就不要在线生图了，先把流程稳稳跑过去再说。
+
+## SiliconFlow 这条线为什么比较顺手
 
 `siliconflow` 这条线有意思的地方，是它故意不直接用文章正文去喂模型。
 
@@ -169,13 +239,7 @@ npm run posts:retry -- --pending
 
 这个做法有点像“先定视觉系统，再生成单篇封面”。它牺牲了一些一文一图的贴合度，换来的是整站看起来不会忽左忽右。
 
-Gemini 那条线就更贴正文一点。它会从文章里抽摘要，提几个 proper noun，再让模型围绕文章主题画场景。不过它同样很强调别把标题、按钮文案、水印这些文字直接画进图里。
-
-两条路我都能理解。
-
-如果你更在意站点整体视觉统一，`siliconflow` 这套 preset 更稳；如果你更想让单篇封面有具体语义，Gemini 那套会更贴题。
-
-## 真失败了，也不会给你一片空白
+## 真失败了，页面也不会空着
 
 封面生成失败时，脚本会调用 `createFallbackSvg(slug)`。
 
@@ -198,7 +262,7 @@ npm run posts:images:backfill
 
 ## 它没有把自动化做成黑箱
 
-我觉得这个项目还有个处理得不错的地方，是它并不假装“AI 已经全自动，不需要人看了”。
+这个项目中的英文版本和封面图片生成并不是遵循“AI 已经全自动，不需要人看了”。
 
 如果 pre-commit 阶段真的生成或更新了文件，hook 会故意退出一次，并提示你：
 
@@ -210,7 +274,7 @@ Review the generated files, run `git add`, and commit again.
 
 这个动作虽然会多一次 `git add`，但我觉得值。因为英文稿和封面这种内容型资源，最大的风险往往不是脚本报错，而是它看起来像成功了，其实细节不对。中断一次，反而是给人留了最后一道闸门。
 
-## 这套实现为什么顺手
+## 这套实现为什么真的能挂进日常流程
 
 如果只看功能点，它无非就是“翻译文章 + 生成封面”。很多项目都能做到。
 
@@ -227,7 +291,7 @@ Review the generated files, run `git add`, and commit again.
 
 说到底，博客自动化最怕的不是做不到，而是半自动、半手动、坏了还不知道从哪补。这个仓库把补救路径留得很清楚，所以用起来不别扭。
 
-## 最后看一眼落点
+## 最后看一眼最值得借的点
 
 如果你也想在自己的博客里抄这套思路，我觉得最值得借的不是某个 provider，而是这几个设计决定：
 

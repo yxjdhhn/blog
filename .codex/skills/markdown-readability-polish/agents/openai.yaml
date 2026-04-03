@@ -1,0 +1,4 @@
+interface:
+  display_name: "Markdown Readability"
+  short_description: "Polish Markdown article structure and prose styles"
+  default_prompt: "Use $markdown-readability-polish to improve the readability of Markdown articles, either by restructuring the Markdown source, refining rendered article prose styles, or both."

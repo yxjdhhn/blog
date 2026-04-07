@@ -1,0 +1,44 @@
+---
+import { getLangFromUrl, getLocalizedUrl } from '@/i18n/utils';
+
+interface Props {
+  categories: Map<string, number>;
+}
+
+const { categories } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+
+type CategoryTier = 'low' | 'mid' | 'high';
+
+const categoryItems = [...categories.entries()].map(([category, count]) => {
+  const tier: CategoryTier = count >= 3 ? 'high' : count >= 2 ? 'mid' : 'low';
+  return { category, count, tier };
+});
+
+const tierClasses: Record<CategoryTier, string> = {
+  low: 'text-xs px-2.5 py-0.5 bg-bg-subtle text-muted hover:bg-bg-subtle-hover hover:text-secondary',
+  mid: 'text-sm px-3 py-1.5 bg-primary-bg text-primary hover:bg-primary-bg-hover hover:text-primary-hover',
+  high: 'text-base px-4 py-2 bg-primary-bg text-primary hover:bg-primary-bg-hover hover:text-primary-hover',
+};
+
+const countClasses: Record<CategoryTier, string> = {
+  low: 'text-muted',
+  mid: 'text-primary-hover',
+  high: 'text-primary-hover',
+};
+---
+
+<div class="flex flex-wrap gap-2">
+  {categoryItems.map(({ category, count, tier }) => (
+    <a
+      href={getLocalizedUrl(lang, `/categories/${category}/`)}
+      class:list={[
+        'inline-flex items-center gap-1.5 rounded-full font-medium transition-all hover:scale-105 hover:shadow-md',
+        tierClasses[tier],
+      ]}
+    >
+      {category}
+      <span class:list={['text-xs', countClasses[tier]]}>({count})</span>
+    </a>
+  ))}
+</div>

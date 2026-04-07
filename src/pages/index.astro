@@ -16,13 +16,13 @@ const latestMonth = posts[0] ? formatMonthYear(posts[0].data.pubDate, lang) : ''
 <BaseLayout title={t(lang, 'site.title')} description={t(lang, 'site.description')}>
   <section class="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
     <HomeIntro
-      eyebrow="Personal Notes / Since 2024"
+      eyebrow="Personal Notes / Since 2026"
       title="写技术，也写那些值得反复推敲的日常"
       titleLines={['写技术，也写那些', '值得反复推敲的日常']}
       description="记录技术、工具和一些值得留档的日常判断。"
       archiveStamp={latestMonth ? `最近更新 ${latestMonth}` : undefined}
       links={[
-        { label: '查看标签索引', href: getLocalizedUrl(lang, '/tags/') },
+        { label: '查看分类索引', href: getLocalizedUrl(lang, '/categories/') },
         { label: '了解作者', href: getLocalizedUrl(lang, '/about') },
       ]}
     />

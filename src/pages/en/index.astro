@@ -22,7 +22,7 @@ const latestMonth = posts[0] ? formatMonthYear(posts[0].data.pubDate, lang) : ''
       description="Notes on code, tools, and the decisions worth keeping around."
       archiveStamp={latestMonth ? `Updated through ${latestMonth}` : undefined}
       links={[
-        { label: 'Browse all tags', href: getLocalizedUrl(lang, '/tags/') },
+        { label: 'Browse all categories', href: getLocalizedUrl(lang, '/categories/') },
         { label: 'About the author', href: getLocalizedUrl(lang, '/about') },
       ]}
     />

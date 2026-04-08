@@ -14,8 +14,26 @@ if (existsSync(preCommitPath)) {
   chmodSync(preCommitPath, 0o755);
 }
 
+function readGitConfig(key) {
+  try {
+    return execFileSync('git', ['config', '--get', key], { cwd: rootDir, encoding: 'utf8' }).trim() || null;
+  } catch {
+    return null;
+  }
+}
+
 try {
+  const currentHookPath = readGitConfig('core.hooksPath');
+  if (currentHookPath === '.husky') {
+    process.exit(0);
+  }
+
   execFileSync('git', ['config', 'core.hooksPath', '.husky'], { cwd: rootDir, stdio: 'ignore' });
 } catch (error) {
   console.warn('[posts] Unable to configure git hooks automatically.');
+  const currentHookPath = readGitConfig('core.hooksPath');
+  console.warn(`[posts] Current core.hooksPath: ${currentHookPath ?? '(not set)'}`);
+  console.warn('[posts] Fix manually (run in repo root):');
+  console.warn('[posts]   git config core.hooksPath .husky');
+  console.warn('[posts]   chmod +x .husky/pre-commit');
 }

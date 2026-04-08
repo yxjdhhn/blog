@@ -151,14 +151,17 @@ function buildPrompt(input) {
   const theme = resolveThemePreset(input);
 
   return [
-    'Create a polished 16:9 cover illustration for a bilingual Chinese/English technology blog.',
-    'Use a consistent premium visual language across the whole site: high-end editorial tech illustration, semi-abstract product-visual style, crisp shapes, layered lighting, soft gradients, clean negative space, strong silhouette, immediately readable at card size.',
+    'Create a polished 16:9 hero artwork for a bilingual Chinese/English technology blog.',
+    'high-end abstract tech illustration, sculptural forms, crisp shapes, layered lighting, soft gradients, clean negative space, strong silhouette, immediately readable at card size.',
     'Do not use article title, description, body content, or any literal scene details from the post. Base the image only on the article type and theme family.',
     `Theme family: ${theme.name}.`,
     `Core scene direction: ${theme.scene}.`,
     `Visual motifs: ${theme.motifs}.`,
     `Color direction: ${theme.palette}.`,
-    'No readable text, no letters, no Chinese, no English, no slogans, no captions, no UI labels, no watermarks, no logos.',
+    'This must be purely visual artwork, not a poster, book cover, magazine cover, presentation slide, web page, dashboard, screenshot, phone screen, document page, code editor, terminal window, or infographic.',
+    'Absolutely no text of any kind: no letters, no Chinese characters, no English words, no numbers, no symbols that resemble characters, no typography, no logos, no watermarks, no captions, no labels, no pseudo-text, and no garbled text.',
+    'Do not generate any title area, caption strip, text block, UI chrome, toolbar, sidebar, card header, page frame, signboard, badge, sticker, or rectangular region that invites text.',
+    'If the theme suggests software or content, express it through abstract geometry, light, material, depth, and motion only, never through literal screens, documents, posters, or interface mockups.',
     'Avoid photoreal people and avoid screenshot collage. Prefer clean conceptual imagery, structured geometry, elegant depth, and a unified blog-cover aesthetic.',
   ]
     .filter(Boolean)
@@ -169,6 +172,9 @@ function buildNegativePrompt() {
   return [
     'blurry, low resolution, clutter, noisy background, muddy lighting, weak focal point, cheap stock-photo look, meme style',
     'all readable text, letters, Chinese characters, English words, captions, slogans, subtitles, posters, labels, UI button copy, watermark, logo, brand overlay',
+    'text, letters, characters, words, captions, labels, typography, any symbol resembling a letter or Chinese character, pseudo-text, faux text, text-like shapes, text area, headline block, subtitle, watermark, logo, brand, squiggles that look like writing, unreadable characters, stroke patterns that mimic writing, garbled text',
+    'poster, book cover, magazine cover, title page, document page, slide deck, infographic, signboard, billboard, packaging, badge, sticker, framed print',
+    'browser window, website layout, dashboard, code editor, terminal window, mobile UI, app screenshot, wireframe with labels, interface mockup, toolbar, sidebar, card header',
     'screenshot collage, pasted browser window, pasted mobile UI, multiple unrelated scenes, random props, visual chaos',
     'deformed hands, distorted faces, duplicated objects, bad anatomy, uncanny humans',
   ].join(', ');
@@ -187,8 +193,8 @@ function resolveThemePreset(input) {
   if (/(chrome devtools|devtools|debug|调试|mcp|inspect|浏览器)/i.test(tokens)) {
     return {
       name: 'developer tools',
-      scene: 'a futuristic but clean debugging workspace with abstract browser panels, signal traces, layered inspection overlays, and luminous interface planes, without any readable UI text',
-      motifs: 'glass panels, waveform traces, inspection markers, browser-frame silhouettes, system grids, depth layers',
+      scene: 'a futuristic but clean diagnostic environment expressed as abstract signal paths, layered glass geometry, luminous tracing beams, and spatial inspection structures',
+      motifs: 'signal lines, waveform arcs, translucent geometry, grid volumes, tracing markers, depth layers',
       palette: 'electric blue, cyan, indigo, graphite, subtle neon highlights',
     };
   }
@@ -205,8 +211,8 @@ function resolveThemePreset(input) {
   if (/(markdown|writing|博客|blog|写作|content|editorial)/i.test(tokens)) {
     return {
       name: 'editorial content',
-      scene: 'an elegant editorial-tech composition with floating document forms, composition grids, page-like panels, and structured content blocks, without readable text',
-      motifs: 'paper-like planes, framing grids, card stacks, subtle cursors, layout rhythm, soft shadows',
+      scene: 'an elegant content-inspired composition translated into layered planes, flowing structure, rhythm, and spatial balance, without any literal document or page',
+      motifs: 'folded planes, structural grids, layered surfaces, motion ribbons, soft shadows, composition rhythm',
       palette: 'warm white, graphite, ink blue, muted gold, cool gray accents',
     };
   }
@@ -214,8 +220,8 @@ function resolveThemePreset(input) {
   if (/(uniapp|wechat|微信|plugin|插件|mobile|app)/i.test(tokens)) {
     return {
       name: 'mobile platform engineering',
-      scene: 'a polished mobile-platform scene with device silhouettes, modular plugin components, integration nodes, and app architecture forms',
-      motifs: 'device frames, modular blocks, connector lines, stacked layers, system hubs, app-shell silhouettes',
+      scene: 'a polished mobile-platform concept scene with rounded hardware-inspired forms, modular components, integration nodes, and layered app-architecture volumes',
+      motifs: 'rounded geometry, modular blocks, connector lines, stacked layers, system hubs, luminous edges',
       palette: 'emerald, aqua, deep blue, slate, restrained luminous edges',
     };
   }

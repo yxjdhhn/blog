@@ -91,14 +91,14 @@ npm run dev
 | `npm run build` | 构建站点，并为 `dist/` 生成 Pagefind 索引 |
 | `npm run preview` | 预览生产构建结果 |
 | `npm run posts:sync` | 扫描全部中文文章，同步英文稿和封面 |
-| `npm run posts:sync:staged` | 只处理已暂存的中文文章，供 pre-commit 使用 |
-| `npm run posts:retry -- <slug>` | 重试单篇 `pending` 文章 |
+| `npm run posts:sync:staged` | 只处理已暂存的中文文章，供 pre-commit 使用，且如果封面已经存在，不会再更新封面 |
+| `npm run posts:retry -- <slug>` | 重试单篇自动化，若只有中文稿荐，则自动生成英文稿和封面，若英文稿为complete，则只更新封面 |
 | `npm run posts:retry -- --pending` | 重试全部 `pending` 文章 |
 | `npm run posts:images:backfill` | 为缺失封面的文章补图 |
 
-### 搜索说明
+### 历史稿件更新
 
-搜索依赖构建产物中的 Pagefind 索引。开发环境下点击搜索会显示提示，这属于当前实现的正常行为；执行 `npm run build` 后搜索才完整可用。
+更新中文稿件之后，想要同步更新历史稿件的英文稿件和封面，可以在对应的英文稿件中加入generatedFrom: zh，再执行命令会出发自动化流程
 
 ## 内容发布
 

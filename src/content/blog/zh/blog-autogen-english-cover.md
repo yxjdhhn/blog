@@ -9,9 +9,9 @@ tags:
   - AI
   - 工程实践
 category: 技术
+heroImage: ../../../assets/blog/generated/blog-autogen-english-cover.png
+imageStatus: complete
 ---
-
-
 [Github项目指路](https://github.com/yxjdhhn/blog)
 
 我挺喜欢这个项目的一点，是它把“AI 自动化”塞进了发文流程里。

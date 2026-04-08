@@ -9,8 +9,9 @@ tags:
   - 前端设计
   - 教程
 category: 技术
+heroImage: ../../../assets/blog/generated/frontend-design-skill.png
+imageStatus: complete
 ---
-
 这篇不是夸 `frontend-design` 有多强，也不是泛泛聊“AI 做设计”这件事。我就是拿一个现成的网页试了一遍，看看它到底怎么用，能把页面往前推多少。
 
 我的实际感受是：它确实能让一个“能用但很普通”的页面变得更顺眼，也能给出一些值得借鉴的处理。但如果你拿它去碰复杂站点、要求高的品牌官网，或者想靠它一路做完整套界面，还是会有点不够。

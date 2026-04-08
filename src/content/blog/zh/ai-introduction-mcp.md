@@ -9,7 +9,7 @@ tags:
   - 前端工程化
   - 调试
 category: 技术
-heroImage: ../../../assets/blog/generated/prompt.png
+heroImage: ../../../assets/blog/generated/hello-world.png
 imageStatus: complete
 ---
 前端团队第一次接 `MCP`，最容易卡住的不是“它是什么”，而是这些很实际的问题：

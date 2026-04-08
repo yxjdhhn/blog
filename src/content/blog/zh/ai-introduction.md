@@ -14,7 +14,7 @@ category: 技术
 heroImage: ../../../assets/blog/generated/ai-introduction.png
 imageStatus: complete
 ---
-现在聊 AI Agent，如果还只把它当“会补代码的编辑器插件”，基本已经不够了。
+现在聊 AI Agent，如果还只把它当“会补代码的编辑器插件”，已经完全不够了。
 
 前端工程里真正难的，从来不是让它吐一段 JSX。难的是三件事：
 
@@ -28,7 +28,7 @@ imageStatus: complete
 - `Skill`：指令层
 - `MCP`：协议层
 
-这篇不讲完整踩坑故事，也不讲产品软文。重点就一件事：把这三层拆开，看清它们在 React 前端工程里各自解决什么问题，适合怎么接，以及哪里最容易用歪。
+这篇把这三层拆开，看清它们在 React 前端工程里各自解决什么问题，适合怎么接，以及哪里最容易用歪。
 
 <div class="article-callout">
   <p class="article-kicker">先记结论</p>
@@ -78,6 +78,12 @@ imageStatus: complete
 - `Rule` 管怎么写
 - `Skill` 管怎么做
 - `MCP` 管能看到什么
+
+CLAUDE.md：公司总制度
+rules：部门补充规定
+skill：这类工作的 SOP 手册
+hook：门禁 / 安检 / 自动检查脚本
+compact：开会开久了，整理一下桌面和纪要
 
 其中最容易混淆的，是 `Rule` 和 `MCP`。
 

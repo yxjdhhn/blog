@@ -9,7 +9,7 @@ tags:
   - Prompt
   - 前端工程化
 category: 技术
-heroImage: ../../../assets/blog/generated/prompt.png
+heroImage: ../../../assets/blog/generated/hello-world.png
 imageStatus: complete
 ---
 很多团队补完 `Rule` 之后，会进入第二个阶段：AI 没那么容易写歪了，但还是不够省事。因为每次做列表页、表单、测试、请求封装，还是要重新描述一遍“你现在应该怎么做”。

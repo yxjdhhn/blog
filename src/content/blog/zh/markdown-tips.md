@@ -11,7 +11,7 @@ category: 工具
 heroImage: ../../../assets/blog/generated/markdown-tips.png
 imageStatus: complete
 ---
-写博客、学习笔记、`README`、Issue 或 PR 描述，Markdown 基本就是默认写作语言。这篇文章不只讲“Markdown 有哪些语法”，还会重点回答三件事：
+写博客、学习笔记、`README`，Markdown 基本就是默认写作语言。这篇文章不只讲“Markdown 有哪些语法”，还会重点回答三件事：
 
 - 标准 Markdown 里最常用的语法有哪些
 - 写博客和笔记时，哪些写法最值得优先用
@@ -372,8 +372,6 @@ npm run dev
 这一节说的不是“新语法”，而是更适合博客和笔记的表达习惯。
 
 ### emoji
-
-结论先说：**可以用，而且在博客和笔记里很实用。**
 
 适合的位置：
 

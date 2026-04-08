@@ -9,8 +9,9 @@ tags:
   - 自动化
   - Astro
 category: 技术
+heroImage: ../../../assets/blog/generated/provider-encapsulation.png
+imageStatus: complete
 ---
-
 [Github项目指路](https://github.com/yxjdhhn/blog)
 
 项目里一旦开始接第三方 AI 接口，代码很容易往两个方向跑偏。

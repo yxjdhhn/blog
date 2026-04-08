@@ -332,7 +332,7 @@ export async function retryPendingPosts(options = {}) {
     const zhPost = posts.find((post) => post.lang === 'zh');
     const enPost = posts.find((post) => post.lang === 'en');
 
-    if (zhPost && enPost?.data.translationStatus === 'pending') {
+    if (zhPost && (!enPost || enPost.data.translationStatus === 'pending')) {
       const syncResult = await syncChinesePost(zhPost.path, {
         retryTranslation: true,
         retryImage: true,

@@ -26,7 +26,7 @@ export default defineConfig({
   },
   markdown: {
     rehypePlugins: [
-      [rehypeCollapsibleCode, { lineThreshold: 3 }],
+      [rehypeCollapsibleCode, { lineThreshold: 5 }],
     ],
     shikiConfig: {
       themes: {

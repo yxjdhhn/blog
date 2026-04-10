@@ -87,8 +87,6 @@ compact：开会开久了，整理一下桌面和纪要
 
 其中最容易混淆的，是 `Rule` 和 `MCP`。
 
-> **判断口诀：** 经常跑偏，先加 `Rule`；经常重复，先拆 `Skill`；经常靠猜，先接 `MCP`。
-
 `Rule` 是脑子里的规矩。它决定 Agent 输出时遵守什么边界。
 
 `MCP` 是手里的外部插槽。它决定 Agent 能访问哪些外部信息和工具。
@@ -120,14 +118,10 @@ compact：开会开久了，整理一下桌面和纪要
 
 ### 典型用法
 
-在 `React + Next.js + TypeScript` 的后台管理项目里，Rule 最适合承载高频、稳定、跨会话生效的规则。
+举个例子，在 `React + Next.js + TypeScript` 的后台管理项目里，Rule 最适合承载高频、稳定、跨会话生效的规则。
 
 比如：
 
-- 统一函数组件和 hooks
-- 默认 `Next.js App Router`
-- `use client` 只在需要浏览器能力时使用
-- `TypeScript strict` 必开
 - 页面、组件、hooks、services、types 目录固定
 - 数据请求必须经过 `services` 层，不直接散落在页面组件里
 
@@ -137,9 +131,6 @@ compact：开会开久了，整理一下桌面和纪要
 # React Admin Baseline
 
 - Use TypeScript only. Assume `strict: true`.
-- Use function components and hooks only.
-- Use Next.js App Router.
-- Add `use client` only when browser APIs, local state, refs, or event handlers are required.
 
 # Project Structure
 
@@ -162,30 +153,13 @@ compact：开会开久了，整理一下桌面和纪要
 - If a page is marked `use client`, explain why.
 ```
 
-这类 Rule 很适合约束下面这些日常动作：
-
-- 生成列表页骨架
-- 生成搜索表单组件
-- 拆分页 hooks
-- 生成页面测试文件
-
-它不负责告诉 Agent 业务接口长什么样。它只负责先把工程边界钉住。
+Rule 不负责告诉 Agent 业务接口长什么样。它只负责先把工程边界钉住。
 
 ### 避坑指南
 
 Rule 最常见的问题，就是 `Rule Inflation`。
 
-也就是把所有东西都往 Rule 里塞。
-
-比如把这些内容一起塞进去：
-
-- 业务背景
-- 接口字段说明
-- 某次迭代的特殊口径
-- 测试账号
-- 发布流程
-
-结果通常只有一个：Rule 变厚，指令变乱，真正重要的约束被淹掉。
+也就是把所有东西都往 Rule 里塞，结果通常只有一个：Rule 变厚，指令变乱，真正重要的约束被淹掉。
 
 Rule 更适合放这三类内容：
 
@@ -238,7 +212,7 @@ Rule 负责方向。Skill 负责动作。不要串。
 
 ### 典型用法
 
-在 React 后台管理场景里，下面几类 Skill 很常见：
+举例子，在 React 后台管理场景里，下面几类 Skill 很常见：
 
 - `create-list-page`
 - `generate-search-form`
@@ -314,13 +288,6 @@ Rule 负责方向。Skill 负责动作。不要串。
 Skill 最容易走歪的地方，是把它写成“万能任务入口”。
 
 比如一个 Skill 既想生成页面，又想补接口，又想写测试，还想顺手做性能优化。最后往往哪块都沾一点，哪块都不稳。
-
-判断一个 Skill 是否设计过头，可以看三点：
-
-- 它是不是只做一类动作
-- 它的输入是不是结构化
-- 它的输出是不是能校验
-
 常见坏味道包括：
 
 - Skill 名字很大，实际边界很虚
@@ -358,13 +325,6 @@ MCP 全称是 `Model Context Protocol`。
 - 支持该协议的客户端都能复用这套能力
 
 这就是协议层的意义。它解决的是解耦，不是单点功能。
-
-所以这里再强调一次边界：
-
-- `Rule` 决定 Agent 怎么想、怎么写
-- `MCP` 决定 Agent 能看到什么、能连什么
-
-一个是约束。一个是能力接入。
 
 ### 典型用法
 

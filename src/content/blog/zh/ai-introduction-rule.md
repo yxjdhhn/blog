@@ -9,7 +9,7 @@ tags:
   - 前端工程化
   - Prompt
 category: 技术
-heroImage: ../../../assets/blog/generated/ai-introduction.png
+heroImage: ../../../assets/blog/generated/ai-introduction-rule.png
 imageStatus: complete
 ---
 如果你已经发现一件事：同一个需求，AI 今天这么写，明天那么写，问题往往不在模型够不够聪明，而在项目边界没被提前说清。
@@ -31,6 +31,8 @@ imageStatus: complete
 - 目录和分层规范
 - 组件、Hooks、请求层的写法边界
 - 输出格式要求
+- 通用禁用项
+- 长期有效的团队规范
 
 它不太适合承载这些内容:
 
@@ -39,13 +41,6 @@ imageStatus: complete
 - 只会在一个任务里出现的细节
 
 更直白一点说，`Rule` 解决的是“写法不稳”的问题，不是“上下文不够”的问题。
-
-| 适合写进 Rule | 更适合放别处 |
-| --- | --- |
-| 技术栈和目录约束 | 业务背景 |
-| 输出格式要求 | 接口字段说明 |
-| 通用禁用项 | 当前迭代临时口径 |
-| 长期有效的团队规范 | 测试账号和发布信息 |
 
 ## 怎么创建
 
@@ -69,13 +64,7 @@ imageStatus: complete
 - 想写你自己的全局偏好，比如“默认中文回复”，用用户规则
 - 想先用一份简单 Markdown 说明项目约束，可以用根目录的 `AGENTS.md`
 
-更稳的做法是这样：
-
-1. 先写一份项目级基线规则，跟代码一起版本管理。
-2. 再补一份个人级规则，只放语言习惯、输出偏好这类不影响团队协作的内容。
-3. 如果规则已经明显分成多个主题，就拆成多份，不要堆成一大坨。
-
-如果你用的是支持项目规则目录的编辑器，可以参考这种组织方式：
+项目规则目录，可以参考这种组织方式：
 
 ```text
 .cursor/
@@ -85,13 +74,13 @@ imageStatus: complete
     api-boundary.md
 ```
 
-这几份文件的职责也要尽量清楚：
+注意⚠️：这几份文件的职责也要尽量清楚：
 
 - `project-baseline.md` 放项目通用约束
 - `react-components.md` 放组件和 hooks 约束
 - `api-boundary.md` 放请求层和数据流边界
 
-如果你希望用结构化规则，通常会写成 `.mdc` 文件。它本质上还是 Markdown，只是前面多了一段 metadata。
+除了编写md文件，还可以写成结构化规则，通常会写成 `.mdc` 文件。它本质上还是 Markdown，只是前面多了一段 metadata。
 
 比如：
 
@@ -139,16 +128,11 @@ alwaysApply: false
 - Keep shared UI components free of page-specific business logic.
 ```
 
+更稳的做法是这样：
 
-第一版不要写太多。能先把最容易出错的三五条钉住，就已经很有价值。
-
-如果你是第一次建，推荐顺序是：
-
-1. 先在项目里建 `.cursor/rules/project-baseline.mdc`
-2. 先写最小规则集
-3. 真正用一两轮之后，再拆成 `components`、`api-boundary` 这种主题文件
-
-这样比一开始就铺十几个文件稳得多。
+1. 先写一份项目级基线规则，跟代码一起版本管理。
+2. 再补一份个人级规则，只放语言习惯、输出偏好这类不影响团队协作的内容。
+3. 如果规则已经明显分成多个主题，就拆成多份，不要堆成一大坨。
 
 ## 怎么编写
 
@@ -214,25 +198,12 @@ alwaysApply: false
 
 但“持续生效”不等于“每条规则都会无脑带进去”。不同类型的 Rule，触发时机是不一样的。
 
-先把这个讲清楚，读者就不容易误会：
-
-| Rule 类型 | 什么时候生效 | 更像什么 |
-| --- | --- | --- |
-| 用户规则 | 每次会话都生效 | 你的全局偏好 |
-| Always Rule | 每次相关对话都带上 | 项目基线 |
-| Auto Attached Rule | 命中文件或路径时带上 | 文件范围规则 |
-| Agent Requested Rule | Agent 判断相关时带上 | 可选补充规则 |
-| Manual Rule | 只有你明确指定时才带上 | 手动插卡 |
-| `AGENTS.md` | 项目级持续生效 | 简化版项目说明 |
-
-所以你问“Rule 是自动调用还是手动指定”，更准确的答案是：
+它不是一个单一开关，而是一组不同触发方式的规则载体。
 
 - 有些是自动生效的
 - 有些是命中文件后自动附加的
 - 有些要你显式指定
 - 还有些是 Agent 自己决定要不要用
-
-它不是一个单一开关，而是一组不同触发方式的规则载体。
 
 这里还要特别说明一下：
 
@@ -356,90 +327,14 @@ Codex 目前更接近 `AGENTS.md` 作用域模型。
 | Claude Code | 靠文件位置和层级 | 看 `CLAUDE.md` 所在位置与目录作用域 |
 | Codex | 靠 `AGENTS.md` 作用域 | 看目录树和更深层规则优先级 |
 
-所以如果你问“Rule 类型是在哪里设置的”，更准确的答案是：
+总结一下：
 
 - 在 Cursor 里，**是在规则编辑器和 `.mdc` metadata 里设置的**
 - 在 Claude Code 和 Codex 里，**更多是由文件放在哪里来决定的**
 
-更顺手的使用方式通常是：
-
-1. 新项目启动时，先写一份最小基线规则。
-2. 让 AI 先在几个高频任务里跑一轮，比如列表页、表单、接口封装。
-3. 看它稳定犯错的地方，再回头补规则，而不是一开始就想写满。
-4. 临时需求不要塞进 Rule，放在当次对话里说清楚就行。
-
-再往下说得更实操一点：
-
-### 什么时候自动生效
-
-下面这几类，通常不需要你每次手动点：
-
-- 用户规则
-- `alwaysApply: true` 的项目规则
-- 命中 `globs` 的自动附加规则
-- 根目录 `AGENTS.md`
-
-比如你打开 `src/components/SearchForm.tsx`，如果有一条规则的 `globs` 命中了 `src/components/**/*.tsx`，那它通常会跟着上下文自动进来。
-
-### 什么时候要手动指定
-
-如果一条规则不是项目基线，而是“只在某类任务里偶尔需要”，更适合做成手动规则。
-
-比如：
-
-- 只有在生成测试时才需要的测试规范
-- 只有在重构老模块时才需要的迁移约束
-- 只有在接支付模块时才需要的安全要求
-
-这类规则不适合常驻，否则会污染所有会话。
-
 更稳的做法是：需要时再显式提一下规则名，或者在聊天里明确说“这次按某条 rule 来做”。
 
-### 什么时候让 Agent 自己判断
-
-还有一类规则比较适合 `Agent Requested`：
-
-- 不是每次都需要
-- 但确实可能在某些任务里有帮助
-- 又不值得你每次手动点
-
-比如：
-
-- “生成 RPC service 时使用内部模板”
-- “修改表格列配置时参考 columns 约定”
-
-这类规则更像候选能力。Agent 觉得相关，就会把它带进来。
-
-你可以这样判断该不该加 Rule：
-
-- 这个错误是不是反复出现
-- 这个约束是不是长期有效
-- 这个规则是不是跨多个任务都适用
-
-如果三个答案都是“是”，就值得写进 Rule。
-
-如果只是一次性要求，比如“这周活动页按钮颜色先改成橙色”，那更适合放在当前任务里，不要写进长期规则。
-
-还有一个很好用的判断标准：Rule 适合约束“默认做法”，不适合承载“例外说明”。
-
-## 写完了如何生效
-
-这部分特别容易被忽略，但其实很关键。
-
-`Rule` 写完之后，通常不是“运行一条命令生成”，而是满足下面几个条件后就会生效：
-
-1. 文件放在客户端能识别的位置
-2. 文件格式正确
-3. 规则类型和作用范围设置正确
-4. 重新打开会话，或者让客户端重新加载规则
-
-更直白一点说：
-
-- `.cursor/rules/*.mdc` 放对了位置，客户端就会识别
-- `AGENTS.md` 放在项目根目录，客户端就会把它当项目说明
-- 用户规则写在设置里，保存后通常就会全局生效
-
-但有个很常见的坑：
+## 避坑指南
 
 **很多客户端不会把你刚改完的规则立刻热更新到当前对话。**
 
@@ -451,12 +346,11 @@ Codex 目前更接近 `AGENTS.md` 作用域模型。
 
 如果你已经在一个旧会话里聊了很久，再改规则，模型未必会完整拿到新版本上下文。这时候直接开新会话通常最稳。
 
-还有几种“看起来写了，其实没生效”的典型原因：
+有几种“看起来写了，其实没生效”的典型原因：
 
 - `.mdc` frontmatter 写错了
 - `globs` 没命中实际文件
 - 规则放错目录了
-- 把临时需求写进 Rule，结果你以为它该一直生效
 
 <div class="article-callout">
   <p class="article-kicker">判断 Rule 有没有真的生效</p>
@@ -466,46 +360,6 @@ Codex 目前更接近 `AGENTS.md` 作用域模型。
     <li>如果没有生效，先查目录、文件格式和 globs，而不是先怀疑模型。</li>
   </ul>
 </div>
-
-## 实例
-
-下面给一个 React 管理后台项目的最小可用 Rule。它不求面面俱到，但足够把高频跑偏点压住。
-
-```md
-# React Admin Rules
-
-- Use TypeScript with strict typing.
-- Use function components only.
-- Keep page files focused on orchestration, not data access details.
-
-# Structure
-
-- Pages live in `src/app`.
-- Shared components live in `src/components`.
-- Data fetching lives in `src/services`.
-- Shared hooks live in `src/hooks`.
-
-# UI
-
-- Search forms should use the shared form wrapper.
-- Table columns should live in dedicated config files.
-- Do not place fetch logic inside reusable components.
-
-# Output
-
-- Add explicit prop types for exported components.
-- Prefer named types over broad `any`.
-- If a page uses `use client`, explain the reason briefly.
-```
-
-这份规则特别适合接住下面几类任务：
-
-- 生成列表页骨架
-- 生成搜索表单
-- 拆 hooks
-- 补测试文件
-
-它的特点很明确：不讲业务，只讲工程边界。这样 AI 在不同任务里都能复用。
 
 ## 建议的使用流程
 

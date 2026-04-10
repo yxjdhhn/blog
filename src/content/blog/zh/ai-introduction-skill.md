@@ -1,6 +1,6 @@
 ---
-title: Skill 怎么用：把高频任务拆成 AI 能复用的动作
-description: 从创建、编写、调用到实例设计，讲清楚 Skill 怎么拆、怎么写、怎么避免变成万能 Prompt。
+title: Skill 怎么用：把高频需求拆成 AI 能复用的工作
+description: 从创建、编写、调用到实现，讲清楚 Skill 怎么拆、怎么写、怎么避免变成万能 Prompt。
 pubDate: '2026-03-30'
 tags:
   - AI
@@ -9,7 +9,7 @@ tags:
   - Prompt
   - 前端工程化
 category: 技术
-heroImage: ../../../assets/blog/generated/hello-world.png
+heroImage: ../../../assets/blog/generated/ai-introduction-skill.png
 imageStatus: complete
 ---
 很多团队补完 `Rule` 之后，会进入第二个阶段：AI 没那么容易写歪了，但还是不够省事。因为每次做列表页、表单、测试、请求封装，还是要重新描述一遍“你现在应该怎么做”。
@@ -66,8 +66,12 @@ imageStatus: complete
 skills/
   create-list-page/
     SKILL.md
+    examples/
+      basic.md
   generate-search-form/
     SKILL.md
+    examples/
+      basic.md
 ```
 
 如果是项目内共享，也可以这样放：
@@ -77,11 +81,20 @@ skills/
   skills/
     create-list-page/
       SKILL.md
+      examples/
+        basic.md
     generate-page-test/
       SKILL.md
+      examples/
+        basic.md
 ```
 
-关键不是一定要叫这个目录名，而是你所在的客户端或平台能不能识别它。你可以把它理解成：`Skill` 需要放在“客户端会加载的技能目录”里，而不是随便放一个 Markdown 文件就会自动生效。
+其中：
+
+- `SKILL.md` 放技能定义本身
+- `examples/` 放示例输入、参考输出或补充说明
+
+如果你的平台不支持 `SKILL.md` 目录扫描，也可以把 Skill 直接登记到平台配置里。但就文章落地性来说，最容易理解的仍然是“一个 skill 一个目录，一份 `SKILL.md`”。
 
 最适合抽成 Skill 的，一般都是这三类动作：
 
@@ -170,24 +183,6 @@ Generate a React admin list page with search area, table area, and pagination.
 - 文件名常见是 `SKILL.md`
 - 文件内容要尽量固定成“目标、输入、步骤、输出、约束”这几个区块
 
-一个更完整一点的目录示意可以是：
-
-```text
-generate-search-form/
-  SKILL.md
-  examples/
-    basic.md
-```
-
-其中：
-
-- `SKILL.md` 放技能定义本身
-- `examples/` 放示例输入、参考输出或补充说明
-
-如果你的平台不支持 `SKILL.md` 目录扫描，也可以把 Skill 直接登记到平台配置里。但就文章落地性来说，最容易理解的仍然是“一个 skill 一个目录，一份 `SKILL.md`”。
-
-这个结构看起来不复杂，但已经足够实用。因为它把最重要的东西都钉住了。
-
 编写时尤其要注意下面几件事：
 
 - 名字不要太大。`create-list-page` 可以，`build-admin-system` 就明显过头了。
@@ -196,29 +191,11 @@ generate-search-form/
 - 不要把项目规范塞进 Skill，那部分应该交给 Rule。
 
 最容易写坏的情况，是一个 Skill 既想生成页面，又想写接口，又想补测试，还想顺手做性能优化。这样边界一散，复用率就会立刻下降。
-
-<div class="article-callout">
-  <p class="article-kicker">写 Skill 时只盯三件事</p>
-  <ol>
-    <li>输入是不是清楚到别人能直接填。</li>
-    <li>输出是不是清楚到结果能直接验。</li>
-    <li>这个 Skill 是不是只负责一个稳定动作。</li>
-  </ol>
-</div>
-
 ## 怎么用
 
 `Skill` 真正好用的地方，在于你不需要每次都重新组织任务语言。
 
-但它也不是“写完就一定自动用上”。`Skill` 和 `Rule` 最大的差别之一，就是它通常更接近“被选用的工作流”，而不是“默认挂上的约束”。
-
-所以你问“Skill 是自动调用还是手动指定”，更准确的答案是：
-
-- 有些客户端会在理解到任务意图后自动选 Skill
-- 有些平台需要你手动点选或显式提到 Skill 名
-- 还有些是命令式触发，比如 slash command、模板命令或工作流按钮
-
-它不像 `Rule` 那样天然偏“常驻”，而更像“当前任务该不该切这套动作”。
+但它也不是“写完就一定自动用上”。
 
 先把触发时机分清楚：
 
@@ -229,34 +206,13 @@ generate-search-form/
 | 命令型 | 通过 slash command 或工作流入口触发 | 像 `/create-list-page` 这种 |
 | 平台工作流型 | 你在界面里点按钮启动 | 更像“执行一个模板化任务” |
 
-这里要特别说明一下：
-
-这四种并不是“Skill 文件里必须先写一个 type 字段”才能成立。更准确地说，它们是 **Skill 的触发方式**，通常由下面三件事共同决定：
-
-1. 客户端或平台本身支不支持哪种触发方式
-2. 这个 Skill 是怎么被注册进去的
-3. 你在当前任务里是让 Agent 自己选，还是手动点名
-
-也就是说，`SKILL.md` 本身更常负责这些内容：
-
-- 这个 Skill 叫什么
-- 它解决什么问题
-- 需要什么输入
-- 要产出什么结果
-- 中间按什么步骤完成
-
 至于它最终是“自动匹配型”还是“命令型”，很多时候不只看文件内容，还看平台怎么加载它。
 
-比如：
+所以你问“Skill 是自动调用还是手动指定”，更准确的答案是：
 
-- 如果平台支持根据 `name + description` 自动做意图匹配，那它就可能表现成“自动匹配型”
-- 如果平台把这个 Skill 挂成 `/create-list-page`，那它就会表现成“命令型”
-- 如果平台要求你在界面里点一个按钮启动，它就更像“平台工作流型”
-
-所以更稳的理解是：
-
-- **Skill 内容** 决定“它能不能被识别、适不适合被选中”
-- **平台接入方式** 决定“它是自动触发、手动触发，还是命令触发”
+- 有些客户端会在理解到任务意图后自动选 Skill
+- 有些平台需要你手动点选或显式提到 Skill 名
+- 还有些是命令式触发，比如 slash command、模板命令或工作流按钮
 
 如果某个平台支持在 Skill metadata 里补更多信息，比如命令名、分类、标签、描述权重，那这些字段会影响触发方式。但这不是所有客户端都有的统一标准。
 
@@ -325,22 +281,6 @@ Cursor 官方目前并没有一个和 Claude Code 完全对应的、稳定的一
 
 也就是说，在 Cursor 里，触发方式主要不是由 `SKILL.md` 这种标准文件决定，而是由你到底用的是 `Commands` 还是 `Custom Modes` 决定。
 
-#### 4. Claude.ai
-
-Claude.ai 也支持 Skill，但它和 Claude Code 的载体不完全一样。
-
-官方文档里提到：
-
-- 预置 Skill 会在相关任务里直接工作
-- 自定义 Skill 可以上传后供 Claude 使用
-
-所以在 Claude.ai 里，Skill 的使用方式也偏向：
-
-- 平台先加载
-- 模型再按相关性自动决定是否使用
-
-它不像 slash command 那样必须每次手动敲命令，更偏“平台内自动发现 + 按相关性触发”。
-
 把这几个平台放一起看，你会发现一个更稳的判断：
 
 | 平台 | 更像哪种触发逻辑 |
@@ -350,7 +290,6 @@ Claude.ai 也支持 Skill，但它和 Claude Code 的载体不完全一样。
 | Codex `Skill` | 自动匹配型 + 手动指定型都支持 |
 | Cursor `Commands` | 手动指定型 |
 | Cursor `Custom Modes` | 平台工作流型 |
-| Claude.ai `Skill` | 平台加载后按相关性自动触发 |
 
 所以如果你要问“常用平台怎么决定 skill 的执行类型”，更准确的答案是：
 
@@ -358,13 +297,7 @@ Claude.ai 也支持 Skill，但它和 Claude Code 的载体不完全一样。
 - 有的平台靠 **功能入口** 决定，比如 Cursor 的 Commands 和 Modes
 - 有的平台允许 **同一个 Skill 同时支持自动和手动**，比如 Codex
 
-这也是为什么前面一直强调：不要把“Skill 类型”理解成一个所有平台统一的 `type` 字段。
-
-更顺手的用法通常是：
-
-1. 先用 `Rule` 把项目边界钉住。
-2. 遇到重复任务时，把任务描述抽成一个 Skill。
-3. 之后只需要补具体参数，而不是每次都重写整段说明。
+这也是为什么前面一直说的：不要把“Skill 类型”理解成一个所有平台统一的 `type` 字段。
 
 ### 什么时候自动触发
 
@@ -417,16 +350,6 @@ Claude.ai 也支持 Skill，但它和 Claude Code 的载体不完全一样。
 
 因为 Skill 的前提就是“复用”。一次性需求写成 Skill，维护成本通常大于收益。
 
-比如你要生成一个订单列表页，与其每次都手写长 Prompt，不如直接提供：
-
-- 页面名
-- 路由
-- 搜索字段
-- 表格列
-- 请求服务名
-
-这样 AI 收到的是结构化任务，而不是模糊愿望。
-
 还有一个很实用的经验：先让 Skill 只负责“产出第一版”。像接口细节、文案微调、联调修补，可以放在后续对话里，不要全部塞进同一个 Skill。
 
 ## 写完了如何生效
@@ -439,12 +362,6 @@ Claude.ai 也支持 Skill，但它和 Claude Code 的载体不完全一样。
 2. 文件格式符合它支持的约定
 3. Skill 名称、描述、输入输出写得足够清楚
 4. 重新加载技能列表，或者新开会话
-
-更直白一点说：
-
-- 你只是随手把一个 `SKILL.md` 放在仓库角落里，客户端未必会认
-- 你把它放进技能目录、插件目录或平台配置里，客户端才知道“这里有个 skill”
-- 很多客户端不会在当前会话里热更新刚新增的 skill
 
 所以更稳的做法是：
 
@@ -461,13 +378,6 @@ Claude.ai 也支持 Skill，但它和 Claude Code 的载体不完全一样。
 
 如果平台支持技能列表查看，也可以先确认它有没有被识别出来。
 
-常见的“不生效”原因一般有这些：
-
-- Skill 文件放错位置
-- Skill 名和描述太模糊，Agent 不知道什么时候该选它
-- 输入输出边界没写清，导致自动匹配失败
-- 新 skill 加进去后没有重新加载会话
-
 <div class="article-callout">
   <p class="article-kicker">判断 Skill 有没有真的生效</p>
   <ul>
@@ -476,50 +386,6 @@ Claude.ai 也支持 Skill，但它和 Claude Code 的载体不完全一样。
     <li>如果它总被误用，说明边界还不够清楚，应该继续拆小。</li>
   </ul>
 </div>
-
-## 实例
-
-下面给一个前端项目里很常见的 Skill：`generate-search-form`。
-
-它适合解决的问题是：搜索表单总在重复写，但每次字段组合不一样。
-
-```json
-{
-  "name": "generate-search-form",
-  "description": "Generate a typed search form for a React admin page.",
-  "input_schema": {
-    "pageName": "string",
-    "fields": "array",
-    "defaultValues": "object",
-    "submitMapper": "string"
-  },
-  "output_contract": {
-    "files": [
-      "search form component",
-      "form value types"
-    ],
-    "must_validate": [
-      "respect shared form wrapper",
-      "use explicit types",
-      "do not inline request logic"
-    ]
-  }
-}
-```
-
-这个 Skill 的边界就很清楚：
-
-- 它负责生成搜索表单
-- 它不负责实现接口服务
-- 它不负责整个页面
-
-所以它特别适合和其他 Skill 组合使用，比如：
-
-- `create-list-page`
-- `wire-table-columns`
-- `generate-page-test`
-
-拆成这种粒度之后，复用会明显稳定很多。
 
 ## 建议的使用流程
 
@@ -543,3 +409,5 @@ Claude.ai 也支持 Skill，但它和 Claude Code 的载体不完全一样。
 如果 AI 已经知道“该按什么规范写”，但还是经常不知道“下一步该怎么做”，那就该补 `Skill`。
 
 想继续看外部上下文怎么接，接着读 [《MCP 怎么用》](/blog/ai-introduction-mcp/)。
+
+在这里推荐一些skills资源 [40 个 Agent Skills 精选资源 - 鱼皮推荐](https://juejin.cn/post/7605422894052605967)。

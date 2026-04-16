@@ -9,7 +9,7 @@ tags:
   - 前端工程化
   - 调试
 category: 技术
-heroImage: ../../../assets/blog/generated/hello-world.png
+heroImage: ../../../assets/blog/generated/ai-introduction-mcp.png
 imageStatus: complete
 ---
 前端团队第一次接 `MCP`，最容易卡住的不是“它是什么”，而是这些很实际的问题：
@@ -51,7 +51,7 @@ imageStatus: complete
 
 ## 前端先装哪几个 MCP
 
-如果你是前端，不建议一上来就装十几个。先从最常用、最容易见效的四类开始。
+如果你是前端，不建议一上来就装十几个。先从最常用、最容易见效的三类开始。
 
 <div class="article-grid">
   <div class="article-card">
@@ -119,7 +119,7 @@ imageStatus: complete
 
 ## 怎么创建：先分清你接的是哪一种
 
-前端接 `MCP`，最实用的分类不是按“文档类 / 浏览器类 / 设计类”，而是按接入方式分成两种：
+前端接 `MCP`，按接入方式分成两种：
 
 ### 1. 本地 `stdio` server
 
@@ -253,7 +253,7 @@ args = ["@playwright/mcp@latest"]
 
 像 Cursor 这一类客户端，常见是通过设置界面添加，或者写全局 / 项目级 `mcp.json`。如果你的团队希望“只有这个项目才启用某个 MCP”，优先用项目级配置会更稳。
 
-## 怎么使用现成的 MCP server
+## 怎么使用已安装配置的 MCP server
 
 这里最容易误解的一点是：不是所有 MCP 都按同一种方式触发。
 
@@ -325,13 +325,6 @@ args = ["@playwright/mcp@latest"]
 | 要根据设计稿还原页面或拿组件约束 | `Figma MCP` | 能拿到设计节点、组件、变量和上下文 |
 | 有内部设计系统、组件库、BFF 平台 | 自己写一个 MCP | 公共 server 不知道你的私有规则 |
 
-前端里最容易见效的三个闭环是：
-
-1. 写代码前，用 `Context7` 查当前库的最新用法。
-2. 页面出问题时，用 `chrome-devtools-mcp` 看真实现场。
-3. 对设计稿时，用 `Figma MCP` 提供节点上下文。
-
-这三个加起来，已经能覆盖大部分日常开发。
 
 ## 实例 1：前端现成 MCP 怎么接，怎么用
 
@@ -646,30 +639,6 @@ args = ["/ABSOLUTE/PATH/frontend-mcp/build/index.js"]
 这里有个很容易踩的坑：
 
 `stdio` server 不能往 `stdout` 乱打日志，不然会把 MCP 消息流打坏。你如果要打印日志，应该打到 `stderr`。
-
-## 实例 2：前端什么时候该自己写 MCP
-
-假设你们团队有一套私有后台组件库，AI 最常犯的错是：
-
-- 表单字段顺序总不对
-- 表格列配置总写进页面里
-- 弹窗和抽屉的交互约束总写错
-
-如果这些规则只写在文档里，AI 不一定每次都看。
-
-这时候可以这样落地：
-
-1. `Rule` 里写通用约束，比如“请求层不能写进组件”
-2. `Skill` 里写高频动作，比如“生成列表页骨架”
-3. `MCP` 里暴露组件规范查询工具，比如 `get-component-rule`
-
-这样当 AI 生成一个列表页时：
-
-- `Rule` 负责兜底
-- `Skill` 负责流程
-- `MCP` 负责把私有规范补进来
-
-这才是前端里比较稳的组合方式。
 
 ## 建议的使用流程
 

@@ -7,13 +7,23 @@ if (shouldSkipAutogen()) {
   process.exit(0);
 }
 
-const slugs = await backfillImages({ force: false });
+const args = process.argv.slice(2);
+const force = args.includes('--force');
+const results = await backfillImages({ force });
 
-if (slugs.length === 0) {
-  console.log('[posts] No image backfill needed.');
+if (results.length === 0) {
+  console.log('[posts] No image backfill candidates.');
   process.exit(0);
 }
 
-for (const slug of slugs) {
-  console.log(`[posts] Backfilled image for ${slug}`);
+for (const result of results) {
+  const action = result.changed ? 'Backfilled image for' : 'Tried image backfill for';
+  const changeLabel = result.assetChanged || result.frontmatterChanged ? 'changed' : 'unchanged';
+  console.log(`[posts] ${action} ${result.slug} (image: ${result.imageStatus ?? 'n/a'}, ${changeLabel})`);
+
+  if (result.lastImageError) {
+    console.log(
+      `[posts] Last image error for ${result.slug}: ${result.lastImageError.code} - ${result.lastImageError.message}`
+    );
+  }
 }

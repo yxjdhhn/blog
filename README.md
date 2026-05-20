@@ -94,7 +94,8 @@ npm run dev
 | `npm run posts:sync:staged` | 只处理已暂存的中文文章，供 pre-commit 使用，且如果封面已经存在，不会再更新封面 |
 | `npm run posts:retry -- <slug>` | 重试单篇自动化，若只有中文稿荐，则自动生成英文稿和封面，若英文稿为complete，则只更新封面 |
 | `npm run posts:retry -- --pending` | 重试全部 `pending` 文章 |
-| `npm run posts:images:backfill` | 为缺失封面的文章补图 |
+| `npm run posts:images:backfill` | 为缺失封面、`/images/` 旧封面或 `imageStatus: pending` 的文章补图 |
+| `npm run posts:images:backfill -- --force` | 强制重新生成全部文章封面，用于替换临时 SVG 或批量换图 |
 
 ### 历史稿件更新
 
@@ -214,6 +215,7 @@ SKIP_BLOG_AUTOGEN=0
 - 重试单篇：`npm run posts:retry -- <slug>`
 - 重试全部 pending：`npm run posts:retry -- --pending`
 - 批量补封面：`npm run posts:images:backfill`
+- 强制重生成全部封面：`npm run posts:images:backfill -- --force`
 - 临时跳过自动化：在 `.env` 或 `.env.local` 中设置 `SKIP_BLOG_AUTOGEN=1`
 
 ## 路由概览

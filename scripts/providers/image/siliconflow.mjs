@@ -57,6 +57,7 @@ export function createSiliconFlowImageProvider(env, options = {}) {
           return {
             ...fallbackImage,
             status: 'pending',
+            lastError: serializeImageError(lastError),
           };
         }
 
@@ -66,10 +67,12 @@ export function createSiliconFlowImageProvider(env, options = {}) {
           throw error;
         }
 
+        const imageError = toImageError(error);
         const fallbackImage = await fallbackProvider.generateHeroImage(input);
         return {
           ...fallbackImage,
           status: 'pending',
+          lastError: serializeImageError(imageError),
         };
       }
     },
@@ -291,6 +294,17 @@ function toImageError(error) {
   return new ImageProviderError('unknown', error?.message || String(error), {
     cause: error,
   });
+}
+
+function serializeImageError(error) {
+  if (!error) return null;
+
+  return {
+    code: error.code ?? 'unknown',
+    message: error.message || String(error),
+    status: error.details?.status,
+    at: new Date().toISOString(),
+  };
 }
 
 function sleep(ms) {

@@ -187,6 +187,7 @@ export async function syncChinesePost(sourcePath, options = {}) {
     skippedLegacyEnglish: false,
     translationProgress: null,
     lastTranslationError: null,
+    lastImageError: null,
   };
 
   const legacyEnglish = targetPost && !targetPost.data.generatedFrom && !targetPost.data.sourceHash;
@@ -260,6 +261,7 @@ export async function syncChinesePost(sourcePath, options = {}) {
 
   result.imageStatus = imageSyncResult.status;
   result.wrotePendingImage = imageSyncResult.status === 'pending' && imageSyncResult.changed;
+  result.lastImageError = imageSyncResult.lastError ?? null;
 
   if (existsSync(targetPath)) {
     const updatedEnglish = readPost(targetPath);
@@ -273,7 +275,7 @@ export async function syncChinesePost(sourcePath, options = {}) {
 export async function backfillImages(options = {}) {
   const { imageProvider } = createProviders(process.env);
   const groups = groupPostsBySlug();
-  const changedSlugs = [];
+  const results = [];
 
   for (const [slug, posts] of groups.entries()) {
     const sourcePost = posts.find((post) => post.lang === 'zh') ?? posts[0];
@@ -296,12 +298,17 @@ export async function backfillImages(options = {}) {
       sourceOverridePath: zhPath,
     });
 
-    if (result.changed) {
-      changedSlugs.push(slug);
-    }
+    results.push({
+      slug,
+      changed: result.changed,
+      assetChanged: result.assetChanged ?? false,
+      frontmatterChanged: result.frontmatterChanged ?? false,
+      imageStatus: result.status,
+      lastImageError: result.lastError ?? null,
+    });
   }
 
-  return changedSlugs;
+  return results;
 }
 
 export async function retryPendingPosts(options = {}) {
@@ -354,6 +361,7 @@ export async function retryPendingPosts(options = {}) {
         changed: imageResult.changed,
         translationStatus: enPost?.data.translationStatus,
         imageStatus: imageResult.status,
+        lastImageError: imageResult.lastError ?? null,
       });
       continue;
     }
@@ -371,6 +379,7 @@ export async function retryPendingPosts(options = {}) {
         changed: imageResult.changed,
         translationStatus: enPost.data.translationStatus,
         imageStatus: imageResult.status,
+        lastImageError: imageResult.lastError ?? null,
       });
     }
   }
@@ -630,7 +639,13 @@ async function ensureSharedImage({
       }
     }
 
-    return { changed, status: 'complete' };
+    return {
+      changed,
+      frontmatterChanged: changed,
+      assetChanged: false,
+      status: 'complete',
+      lastError: null,
+    };
   }
 
   let imageResult;
@@ -644,13 +659,16 @@ async function ensureSharedImage({
       body: sourcePost.body,
     });
   } catch (error) {
+    const lastError = serializeProviderError(error);
     imageResult = createFallbackSvg(slug);
     imageResult.status = 'pending';
+    imageResult.lastError = lastError;
   }
 
-  const assetPath = writeGeneratedImage(slug, imageResult.extension, imageResult.buffer);
+  const assetWrite = writeGeneratedImage(slug, imageResult.extension, imageResult.buffer);
+  const assetPath = assetWrite.path;
   const postPaths = Array.from(new Set([sourceOverridePath ?? sourcePost.path, companionPostPath].filter(Boolean)));
-  let changed = false;
+  let frontmatterChanged = false;
 
   for (const postPath of postPaths) {
     const post = readPost(postPath);
@@ -660,35 +678,51 @@ async function ensureSharedImage({
       post.data.heroImage = nextHeroImage;
       post.data.imageStatus = imageResult.status;
       writePost(postPath, post);
-      changed = true;
+      frontmatterChanged = true;
     }
   }
 
-  return { changed, status: imageResult.status };
+  return {
+    changed: frontmatterChanged || assetWrite.changed,
+    frontmatterChanged,
+    assetChanged: assetWrite.changed,
+    status: imageResult.status,
+    lastError: imageResult.lastError ?? null,
+  };
 }
 
 function writeGeneratedImage(slug, extension, buffer) {
   const assetPath = getImageAssetPath(slug, extension);
+  const nextBuffer = Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer);
   mkdirSync(dirname(assetPath), { recursive: true });
-  deleteGeneratedImages(slug, assetPath);
-  writeFileSync(assetPath, buffer);
-  return assetPath;
+  const deletedCount = deleteGeneratedImages(slug, assetPath);
+  const previousBuffer = existsSync(assetPath) ? readFileSync(assetPath) : null;
+  writeFileSync(assetPath, nextBuffer);
+
+  return {
+    path: assetPath,
+    changed: deletedCount > 0 || !previousBuffer || !previousBuffer.equals(nextBuffer),
+  };
 }
 
 function deleteGeneratedImages(slug, currentPath) {
   const dir = dirname(getImageAssetPath(slug, '.svg'));
   const baseName = slug.split('/').pop();
+  let deletedCount = 0;
 
-  if (!existsSync(dir)) return;
+  if (!existsSync(dir)) return deletedCount;
 
   for (const file of readdirSync(dir)) {
     if (file.startsWith(`${baseName}.`)) {
       const candidate = resolve(dir, file);
       if (candidate !== currentPath && IMAGE_EXTENSIONS.includes(extname(candidate))) {
         rmSync(candidate, { force: true });
+        deletedCount += 1;
       }
     }
   }
+
+  return deletedCount;
 }
 
 function createFallbackSvg(slug) {
@@ -983,6 +1017,17 @@ function serializeError(error) {
   return {
     code: normalized.code ?? 'unknown',
     message: normalized.message,
+    at: new Date().toISOString(),
+  };
+}
+
+function serializeProviderError(error) {
+  if (!error) return null;
+
+  return {
+    code: error.code ?? error.name ?? 'unknown',
+    message: error.message || String(error),
+    status: error.details?.status,
     at: new Date().toISOString(),
   };
 }

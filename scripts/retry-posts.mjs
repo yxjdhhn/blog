@@ -37,4 +37,7 @@ for (const result of results) {
       `[posts] Last translation error for ${result.slug}: ${result.lastTranslationError.code} - ${result.lastTranslationError.message}`
     );
   }
+  if (result.lastImageError) {
+    console.log(`[posts] Last image error for ${result.slug}: ${result.lastImageError.code} - ${result.lastImageError.message}`);
+  }
 }

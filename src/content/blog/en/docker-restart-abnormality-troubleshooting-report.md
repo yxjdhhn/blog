@@ -15,12 +15,12 @@ tags:
   - Troubleshooting
 category: Technology
 heroImage: >-
-  ../../../assets/blog/generated/docker-restart-abnormality-troubleshooting-report.svg
+  ../../../assets/blog/generated/docker-restart-abnormality-troubleshooting-report.png
 draft: false
 generatedFrom: zh
 sourceHash: 9c3fdab668804d8ca40b1f06204b08ff8637bf34a2c6141c6f70fdb124bc00a6
 translationStatus: complete
-imageStatus: pending
+imageStatus: complete
 ---
 After the server reboot, the Docker Compose services under `/home/ac/ui/auth` did not automatically recover.
 

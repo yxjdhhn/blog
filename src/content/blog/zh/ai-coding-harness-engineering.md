@@ -9,8 +9,8 @@ tags:
   - Harness
   - 工程化
 category: 技术
-heroImage: ../../../assets/blog/generated/ai-coding-harness-engineering.svg
-imageStatus: pending
+heroImage: ../../../assets/blog/generated/ai-coding-harness-engineering.png
+imageStatus: complete
 ---
 过去一段时间，大家聊 AI 编程，很容易先问一个问题：哪个模型更强、效果更好？
 

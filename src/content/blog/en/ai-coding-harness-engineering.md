@@ -12,12 +12,12 @@ tags:
   - Harness
   - Engineering
 category: Technology
-heroImage: ../../../assets/blog/generated/ai-coding-harness-engineering.svg
+heroImage: ../../../assets/blog/generated/ai-coding-harness-engineering.png
 draft: false
 generatedFrom: zh
 sourceHash: 2e1586c3ca525929c2c378fa0b9c0686b3b80d34783b2efba86a8876a5d4d466
 translationStatus: complete
-imageStatus: pending
+imageStatus: complete
 ---
 Over the past while, when people talked about AI-assisted coding, it was easy to first ask: which model is stronger, which one gives better results?
 

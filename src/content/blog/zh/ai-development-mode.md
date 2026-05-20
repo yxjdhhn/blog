@@ -9,8 +9,8 @@ tags:
   - Agent
   - 工程化
 category: 技术
-heroImage: ../../../assets/blog/generated/ai-development-mode.svg
-imageStatus: pending
+heroImage: ../../../assets/blog/generated/ai-development-mode.png
+imageStatus: complete
 ---
 最近读完 [程序员鱼皮-面试官皱眉：“你简历上写精通 AI 开发？” 我自信：“不就是调个接口吗？” 他没绷住笑：“就这？”](https://mp.weixin.qq.com/s/x3eigelOnJJi-F2qzBxihg?scene=1&click_id=18) 这篇文章，觉得不错，在这记录一下学习笔记。
 

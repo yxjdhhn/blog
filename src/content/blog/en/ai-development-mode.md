@@ -12,12 +12,12 @@ tags:
   - Agent
   - Engineering
 category: Technology
-heroImage: ../../../assets/blog/generated/ai-development-mode.svg
+heroImage: ../../../assets/blog/generated/ai-development-mode.png
 draft: false
 generatedFrom: zh
 sourceHash: c7334d8b0ddaa24c3812052e6e05af6fc9122400ade0058adcf9acc03e6c2dae
 translationStatus: complete
-imageStatus: pending
+imageStatus: complete
 ---
 Recently I read an article titled [Programmer Fish Skin - The Interviewer Frowned: "You Claim to Be Proficient in AI Development on Your Resume?" I Confidently Replied: "Isn't It Just Calling an API?" He Couldn't Help but Laugh: "That's It?"](https://mp.weixin.qq.com/s/x3eigelOnJJi-F2qzBxihg?scene=1&click_id=18). I found it insightful and am jotting down my study notes here.
 

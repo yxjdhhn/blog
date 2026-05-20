@@ -12,8 +12,8 @@ tags:
   - 故障排查
 category: 技术
 heroImage: >-
-  ../../../assets/blog/generated/docker-restart-abnormality-troubleshooting-report.svg
-imageStatus: pending
+  ../../../assets/blog/generated/docker-restart-abnormality-troubleshooting-report.png
+imageStatus: complete
 ---
 服务器重启后，`/home/ac/ui/auth` 下的 Docker Compose 服务没有自动恢复。
 

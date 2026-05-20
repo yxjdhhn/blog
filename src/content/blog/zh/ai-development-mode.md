@@ -1,7 +1,7 @@
 ---
 title: AI 应用开发的5种模式
 description: 从 HTTP API、官方 SDK、AI 开发框架、低代码平台到 AI 编程工具 SDK，梳理 AI 应用开发的 5 种模式和后续学习路线。
-pubDate: '2026-05-12'
+pubDate: '2026-05-06'
 tags:
   - AI
   - AI 应用开发
@@ -9,6 +9,8 @@ tags:
   - Agent
   - 工程化
 category: 技术
+heroImage: ../../../assets/blog/generated/ai-development-mode.svg
+imageStatus: pending
 ---
 最近读完 [程序员鱼皮-面试官皱眉：“你简历上写精通 AI 开发？” 我自信：“不就是调个接口吗？” 他没绷住笑：“就这？”](https://mp.weixin.qq.com/s/x3eigelOnJJi-F2qzBxihg?scene=1&click_id=18) 这篇文章，觉得不错，在这记录一下学习笔记。
 

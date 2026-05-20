@@ -1,33 +1,40 @@
 ---
-title: Docker 重启后卡在 Loading containers：一次 firewalld 阻塞排查
+title: >-
+  Docker Stuck on Loading Containers After Restart: A firewalld Blocking
+  Investigation
 description: >-
-  记录一次服务器重启后 Docker 无法由 systemd 正常拉起的排查过程，从残留网络引用一路定位到 dockerd 初始化 libnetwork 时被
-  firewalld 的 D-Bus 调用阻塞。
+  A record of troubleshooting why Docker failed to start properly via systemd
+  after a server reboot, tracing from residual network references to dockerd's
+  libnetwork initialization being blocked by firewalld's D-Bus call.
 pubDate: '2026-05-12'
 tags:
   - Docker
   - systemd
   - firewalld
   - D-Bus
-  - 故障排查
-category: 技术
+  - Troubleshooting
+category: Technology
 heroImage: >-
   ../../../assets/blog/generated/docker-restart-abnormality-troubleshooting-report.svg
+draft: false
+generatedFrom: zh
+sourceHash: 9c3fdab668804d8ca40b1f06204b08ff8637bf34a2c6141c6f70fdb124bc00a6
+translationStatus: complete
 imageStatus: pending
 ---
-服务器重启后，`/home/ac/ui/auth` 下的 Docker Compose 服务没有自动恢复。
+After the server reboot, the Docker Compose services under `/home/ac/ui/auth` did not automatically recover.
 
-这次故障一开始看起来像 Docker 自身启动异常，后来又暴露出旧容器引用了不存在的 Docker network。清理残留后，业务虽然可以通过手动 `dockerd` 临时恢复，但一旦切回 systemd 托管，Docker 仍然卡在 `Loading containers: start.`。
+At first, this incident appeared to be a Docker startup anomaly, but later it was revealed that old containers were referencing a non-existent Docker network. After cleaning up the remnants, the services could be temporarily restored by manually starting `dockerd`. However, once switched back to systemd management, Docker still hung at `Loading containers: start.`.
 
-最后通过 `dockerd` 的 goroutine 堆栈确认，真正阻塞 systemd 启动链路的是：
+Ultimately, the goroutine stack of `dockerd` confirmed that the real blocker in the systemd startup chain was:
 
 ```text
 dockerd -> libnetwork -> iptables -> firewalld -> D-Bus
 ```
 
 <div class="article-callout">
-  <p class="article-kicker">最终判断</p>
-  <p>这不是磁盘、inode、overlay2 或普通 containerd 目录残留导致的问题。核心原因是 Docker 18.06.3-ce 初始化网络时调用 firewalld 的 D-Bus 接口长期不返回，导致 daemon 无法完成启动。</p>
+  <p class="article-kicker">Final Diagnosis</p>
+  <p>This was not caused by disk, inode, overlay2, or common containerd directory remnants. The core issue was that Docker 18.06.3-ce, when initializing the network, called firewalld's D-Bus interface, which did not return for an extended period, preventing the daemon from completing its startup.</p>
 </div>
 
 ## 现场现象：Docker API 不可用
@@ -137,17 +144,17 @@ common-authentication-frontend   nginx:1.25   Up   0.0.0.0:80->80/tcp, 0.0.0.0:4
 
 到这里可以确定：**业务可以通过手动 `dockerd` 临时恢复，旧容器和旧网络引用也确实参与了第一阶段故障。**
 
-## 第二层问题：systemd 托管仍然启动失败
+## Second Layer Problem: systemd Managed Startup Still Fails
 
-临时恢复业务后，还需要把 Docker 切回 systemd 托管，否则下次服务器重启后仍然没有可靠的自动恢复能力。
+After temporarily restoring the service, Docker still needed to be switched back to systemd management; otherwise, there would be no reliable automatic recovery capability after the next server reboot.
 
-当时查看进程：
+Checking the processes at that time:
 
 ```bash
 sudo ps aux | grep -E "dockerd|containerd" | grep -v grep
 ```
 
-可以看到存在手动启动链路：
+Revealed a manually started chain:
 
 ```text
 sudo dockerd
@@ -156,14 +163,14 @@ docker-containerd
 docker-containerd-shim
 ```
 
-而 systemd 中的 Docker 服务状态是：
+While the Docker service status in systemd was:
 
 ```text
 Active: failed
 Loaded: loaded (/etc/systemd/system/docker.service; disabled)
 ```
 
-于是停止业务、清理手动进程和 socket，再尝试恢复 systemd 托管：
+So the service was stopped, manual processes and sockets were cleaned up, and an attempt was made to restore systemd management:
 
 ```bash
 sudo docker-compose down
@@ -177,39 +184,39 @@ sudo systemctl enable docker
 sudo systemctl start docker
 ```
 
-结果 `systemctl start docker` 再次卡住：
+But `systemctl start docker` got stuck again:
 
 ```text
 Active: activating (start)
 Loading containers: start.
 ```
 
-这说明第一层的旧容器和旧网络残留清掉以后，systemd 启动链路里还有另一个阻塞点。
+This indicated that after clearing the leftover old containers and networks from the first layer, there was another blocking point in the systemd startup chain.
 
-## 排除过的方向
+## Directions Excluded
 
-为了避免误判，先排除了几个常见原因。
+To avoid misdiagnosis, several common causes were ruled out first.
 
-### 磁盘空间和 inode
+### Disk Space and Inodes
 
-检查磁盘空间与 inode：
+Check disk space and inodes:
 
 ```bash
 df -h
 df -i
 ```
 
-结果显示根分区和 inode 使用率都很低，因此不是磁盘空间或 inode 耗尽。
+The results show that both the root partition and inode usage are very low, so the issue is not due to exhausted disk space or inodes.
 
-### 容器目录残留
+### Container Directory Residue
 
-检查 Docker 容器目录：
+Check the Docker container directory:
 
 ```bash
 sudo ls -la /var/lib/docker/containers
 ```
 
-结果目录已经为空：
+The directory is already empty:
 
 ```text
 total 0
@@ -217,9 +224,9 @@ drwx------.  2 root root   6 May 11 18:40 .
 drwx--x--x. 15 root root 200 May 11 18:46 ..
 ```
 
-### Docker network 本地数据库
+### Docker Network Local Database
 
-也清理过 Docker network 的本地状态：
+Also cleaned the local state of Docker network:
 
 ```bash
 sudo rm -f /var/lib/docker/network/files/local-kv.db
@@ -227,32 +234,32 @@ sudo rm -rf /run/docker/libnetwork
 sudo rm -rf /var/run/docker/libnetwork
 ```
 
-再检查：
+Then verify:
 
 ```bash
 sudo find /var/lib/docker/network -maxdepth 3 -type f -o -type d
 ```
 
-仅剩基础目录：
+Only the base directories remain:
 
 ```text
 /var/lib/docker/network
 /var/lib/docker/network/files
 ```
 
-### Docker 挂载残留
+### Docker Mount Residuals
 
-检查挂载：
+Check mounts:
 
 ```bash
 mount | grep docker
 ```
 
-没有输出，说明没有 Docker mount 残留。
+No output, indicating no Docker mount residuals.
 
-### containerd 运行时目录
+### containerd Runtime Directory
 
-还曾备份并清理 containerd 相关目录：
+I also backed up and cleaned the containerd-related directories:
 
 ```bash
 sudo mv /var/lib/docker/containerd /var/lib/docker/containerd.bak.20260511191905
@@ -260,35 +267,35 @@ sudo rm -rf /var/run/docker/containerd
 sudo rm -rf /run/docker/containerd
 ```
 
-但 systemd 启动 Docker 仍然卡在：
+But Docker still got stuck during systemd startup at:
 
 ```text
 Loading containers: start.
 ```
 
-所以问题不在普通的 containerd 运行时目录残留。
+So the issue was not caused by residual files in the regular containerd runtime directory.
 
-## 关键证据：dockerd 卡在 firewalld 的 D-Bus 调用
+## Key Evidence: dockerd Stuck on firewalld's D-Bus Call
 
-当 Docker 卡住时，向 `dockerd` 发送 `USR1` 信号：
+When Docker hangs, send the `USR1` signal to `dockerd`:
 
 ```bash
 sudo kill -USR1 <dockerd_pid>
 ```
 
-Docker 会生成 goroutine 堆栈文件：
+Docker generates a goroutine stack file:
 
 ```text
 /var/run/docker/goroutine-stacks-2026-05-11T193633+0800.log
 ```
 
-查看主协程堆栈：
+View the main goroutine stack:
 
 ```bash
 sudo head -n 220 /var/run/docker/goroutine-stacks-2026-05-11T193633+0800.log
 ```
 
-关键内容如下：
+Key content:
 
 ```text
 goroutine 1 [chan receive, 16 minutes]:
@@ -307,35 +314,35 @@ github.com/docker/docker/daemon.NewDaemon
 main.(*DaemonCli).start
 ```
 
-这段堆栈把问题指向了 Docker 初始化网络控制器的过程。
+This stack trace points to the Docker network controller initialization process.
 
-更具体地说，`dockerd` 在初始化 `libnetwork`、`bridge` 和 `iptables` 时，会通过 D-Bus 查询 `firewalld` 状态。这个调用没有返回，导致 Docker daemon 无法完成初始化，systemd 也就一直看到服务处于启动中。
+More specifically, when `dockerd` initializes `libnetwork`, `bridge`, and `iptables`, it queries the `firewalld` status via D-Bus. This call never returns, preventing the Docker daemon from completing initialization, so systemd keeps seeing the service in a starting state.
 
-## 根因判断
+## Root Cause Analysis
 
-这次问题分成两个层次。
+This issue can be broken down into two layers.
 
-第一层是服务器重启后，Docker 自动恢复旧容器时遇到缺失的 network：
+The first layer occurs when Docker attempts to automatically restore old containers after a server restart, encountering a missing network:
 
 ```text
 network e7b97d72... not found
 ```
 
-这一层通过清理旧容器、旧 network 和 Compose 网络后可以绕过去。
+This layer can be bypassed by cleaning up old containers, old networks, and Compose networks.
 
-第二层是切回 systemd 托管时，Docker 仍然卡在启动阶段。最终定位为：
+The second layer arises when switching back to systemd management, where Docker still gets stuck during startup. The final diagnosis is:
 
 ```text
-Docker 18.06.3-ce 在初始化 libnetwork/iptables 时通过 D-Bus 调用 firewalld，调用长期阻塞，导致 dockerd 卡在 Loading containers: start.
+Docker 18.06.3-ce, during libnetwork/iptables initialization, makes a D-Bus call to firewalld that blocks indefinitely, causing dockerd to hang at Loading containers: start.
 ```
 
-所以后续 systemd 启动失败的核心问题不是容器目录、镜像层、overlay2、containerd，也不是磁盘空间，而是 `firewalld` 与 Docker 网络初始化链路之间的阻塞。
+Therefore, the core issue behind the subsequent systemd startup failure is not container directories, image layers, overlay2, containerd, or disk space—but rather the blocking between `firewalld` and Docker's network initialization chain.
 
-## 临时恢复业务的方案
+## Temporary Business Recovery Plan
 
-由于继续修复 systemd/firewalld 链路会拉长恢复时间，当时选择先回到手动部署方式恢复业务。
+Since continuing to fix the systemd/firewalld chain would prolong recovery time, we chose to revert to manual deployment to restore services.
 
-操作步骤如下：
+The steps are as follows:
 
 ```bash
 sudo systemctl kill --kill-who=all --signal=SIGKILL docker
@@ -362,36 +369,36 @@ sudo docker-compose up -d
 sudo docker-compose ps
 ```
 
-预期结果是容器重新处于 `Up` 状态：
+The expected result is that containers return to the `Up` state:
 
 ```text
 common-authentication-frontend   Up   0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp
 ```
 
-## 临时 systemd 配置变更
+## Temporary systemd Configuration Change
 
-排查过程中，为了防止 systemd 在强杀 `dockerd` 后自动拉起并再次卡住，临时增加了 drop-in：
+During troubleshooting, to prevent systemd from automatically restarting `dockerd` after forcefully killing it and causing it to hang again, a temporary drop-in was added:
 
 ```text
 /etc/systemd/system/docker.service.d/no-restart.conf
 ```
 
-内容是：
+With the following content:
 
 ```ini
 [Service]
 Restart=no
 ```
 
-这个配置会覆盖原 Docker service 中的：
+This configuration overrides the original Docker service setting:
 
 ```ini
 Restart=always
 ```
 
-如果继续使用手动启动 Docker，可以暂时保留该文件，避免 systemd 干扰临时恢复。
+If you continue to start Docker manually, you can keep this file temporarily to avoid systemd interfering with the temporary recovery.
 
-如果后续要恢复 systemd 托管，需要删除这个临时覆盖：
+To restore systemd management later, delete this temporary override:
 
 ```bash
 sudo rm -f /etc/systemd/system/docker.service.d/no-restart.conf
@@ -399,7 +406,7 @@ sudo systemctl daemon-reload
 sudo systemctl show docker -p Restart
 ```
 
-期望输出恢复为：
+The expected output should revert to:
 
 ```text
 Restart=always
@@ -465,11 +472,11 @@ curl -I http://127.0.0.1
 curl -k -I https://127.0.0.1
 ```
 
-## 总结
+## Summary
 
-这次排查的关键不是某一个清理命令，而是区分了两个不同阶段的问题：
+The key to this investigation was not a single cleanup command, but distinguishing between two distinct phases of the problem:
 
-1. 服务器重启后，旧容器元数据引用了已经不存在的 Docker network，导致自动恢复失败。
-2. 清理残留后，systemd 启动 Docker 仍然卡住，最终通过 goroutine 堆栈定位为 `dockerd` 在初始化 `libnetwork/iptables` 时调用 `firewalld` 的 D-Bus 接口阻塞。
+1. After the server reboot, old container metadata referenced Docker networks that no longer existed, causing automatic recovery to fail.
+2. After cleaning up the remnants, systemd still hung when starting Docker. The issue was ultimately traced via goroutine stack to `dockerd` blocking on a D-Bus call to `firewalld` during `libnetwork/iptables` initialization.
 
-当线上业务需要先恢复时，手动启动 `dockerd` 是一个临时绕行方案。但真正要解决重启后的自动恢复问题，还是要回到 `firewalld`、D-Bus 和 Docker 版本兼容这条链路上处理。
+When online services need to be restored first, manually starting `dockerd` serves as a temporary workaround. However, to truly resolve automatic recovery after reboot, the root cause lies in the compatibility chain among `firewalld`, D-Bus, and the Docker version.

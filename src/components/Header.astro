@@ -114,6 +114,25 @@ function isActive(href: string): boolean {
           {label}
         </a>
       ))}
+      <a
+        href={serviceHubUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center justify-between rounded-2xl border border-border/80 bg-bg-card/60 px-4 py-3 text-sm font-medium text-secondary transition-colors hover:bg-bg-subtle hover:text-heading"
+      >
+        <span>{moreSitesLabel}</span>
+        <svg class="h-4 w-4 text-muted" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="6" cy="6" r="1.7" />
+          <circle cx="12" cy="6" r="1.7" />
+          <circle cx="18" cy="6" r="1.7" />
+          <circle cx="6" cy="12" r="1.7" />
+          <circle cx="12" cy="12" r="1.7" />
+          <circle cx="18" cy="12" r="1.7" />
+          <circle cx="6" cy="18" r="1.7" />
+          <circle cx="12" cy="18" r="1.7" />
+          <circle cx="18" cy="18" r="1.7" />
+        </svg>
+      </a>
     </nav>
   </div>
 </header>
@@ -149,6 +168,7 @@ function isActive(href: string): boolean {
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    min-width: 0;
     min-height: 5rem;
     padding-block: 0.75rem;
   }
@@ -158,6 +178,24 @@ function isActive(href: string): boolean {
     align-items: center;
     gap: 0.5rem;
     flex-shrink: 0;
+  }
+
+  :global(.site-header__controls > *) {
+    flex: 0 0 auto;
+  }
+
+  .site-header__desktop-nav {
+    flex: 0 0 auto;
+  }
+
+  @media (max-width: 900px) {
+    .site-header__bar {
+      gap: 0.8rem;
+    }
+
+    .site-header__controls {
+      gap: 0.42rem;
+    }
   }
 
   @media (max-width: 720px) {
@@ -189,15 +227,18 @@ function isActive(href: string): boolean {
       gap: 0.38rem;
     }
 
-    .site-header__hub {
-      display: none;
-    }
   }
 
   @media (min-width: 768px) {
     #mobile-menu-btn,
     #mobile-menu {
       display: none !important;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .site-header__hub {
+      display: none;
     }
   }
 </style>
